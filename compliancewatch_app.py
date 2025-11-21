@@ -1,46 +1,41 @@
-# compliancewatch_ultra_interactive.py - Ultra Interactive Version
+# compliancewatch_pure_streamlit.py - Pure Streamlit with Extreme Styling
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
 import random
 import time
 import numpy as np
-import json
 
-# Set page configuration
+# Page config
 st.set_page_config(
-    page_title="ComplianceWatch AI | Next-Gen Monitoring",
+    page_title="ComplianceWatch AI | Quantum Monitoring",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Initialize session state for animations
-if 'animation_counter' not in st.session_state:
-    st.session_state.animation_counter = 0
-if 'alerts_shown' not in st.session_state:
-    st.session_state.alerts_shown = []
-if 'monitoring_active' not in st.session_state:
-    st.session_state.monitoring_active = False
-if 'real_time_data' not in st.session_state:
-    st.session_state.real_time_data = []
+# Initialize session states
+if 'monitoring' not in st.session_state:
+    st.session_state.monitoring = False
+if 'counter' not in st.session_state:
+    st.session_state.counter = 0
+if 'alerts' not in st.session_state:
+    st.session_state.alerts = []
 
-# Ultra-modern CSS with intense animations
+# Custom CSS that works reliably
 st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+<style>
+    /* Import futuristic font */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
     
-    * {
-        font-family: 'Rajdhani', sans-serif;
-    }
-    
-    /* Animated gradient background */
+    /* Global styles */
     .stApp {
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #7752ee, #e73c7e);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
         background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
+        animation: gradientShift 10s ease infinite;
     }
     
     @keyframes gradientShift {
@@ -49,994 +44,819 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
     
-    /* Glassmorphism with neon glow */
-    .main > div {
-        background: rgba(0, 0, 0, 0.4) !important;
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: 
-            0 8px 32px 0 rgba(31, 38, 135, 0.37),
-            0 0 100px rgba(255, 255, 255, 0.1) inset;
+    /* All text styling */
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        font-family: 'Orbitron', monospace !important;
     }
     
-    /* Cyberpunk buttons */
+    /* Main container glass effect */
+    .main .block-container {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        backdrop-filter: blur(20px);
+        border-right: 2px solid rgba(0, 255, 255, 0.5);
+    }
+    
+    /* Button styling */
     .stButton > button {
-        background: linear-gradient(45deg, #00ff88, #00ffff, #ff00ff, #ffff00);
-        background-size: 300% 300%;
-        animation: buttonGlow 3s ease infinite;
-        color: #000;
-        border: 2px solid #fff;
-        padding: 15px 30px;
-        font-weight: 900;
-        font-size: 1.1rem;
+        background: linear-gradient(45deg, #00ffff, #ff00ff);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-weight: bold;
+        border-radius: 50px;
         text-transform: uppercase;
         letter-spacing: 2px;
-        border-radius: 50px;
-        box-shadow: 
-            0 0 20px rgba(0, 255, 136, 0.5),
-            0 0 40px rgba(0, 255, 136, 0.3),
-            inset 0 0 20px rgba(255, 255, 255, 0.2);
-        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: conic-gradient(
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent 30%
-        );
-        animation: rotate 2s linear infinite;
-    }
-    
-    @keyframes buttonGlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    @keyframes rotate {
-        100% { transform: rotate(360deg); }
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        transition: all 0.3s;
     }
     
     .stButton > button:hover {
-        transform: translateY(-5px) scale(1.1);
-        box-shadow: 
-            0 10px 40px rgba(0, 255, 136, 0.8),
-            0 0 80px rgba(0, 255, 136, 0.5);
-        filter: brightness(1.2);
+        transform: scale(1.05) translateY(-3px);
+        box-shadow: 0 5px 30px rgba(0, 255, 255, 0.8);
     }
     
-    .stButton > button:active {
-        transform: translateY(-2px) scale(1.05);
-    }
-    
-    /* Neon text effects */
-    .neon-text {
-        color: #fff;
-        text-shadow: 
-            0 0 10px #00ffff,
-            0 0 20px #00ffff,
-            0 0 40px #00ffff,
-            0 0 80px #00ffff,
-            0 0 120px #00ffff;
-        animation: neonPulse 2s ease-in-out infinite alternate;
-    }
-    
-    @keyframes neonPulse {
-        from { text-shadow: 
-            0 0 10px #00ffff,
-            0 0 20px #00ffff,
-            0 0 40px #00ffff,
-            0 0 80px #00ffff,
-            0 0 120px #00ffff;
-        }
-        to { text-shadow: 
-            0 0 5px #00ffff,
-            0 0 10px #00ffff,
-            0 0 20px #00ffff,
-            0 0 40px #00ffff,
-            0 0 60px #00ffff;
-        }
-    }
-    
-    /* Animated cards */
-    .cyber-card {
-        background: linear-gradient(135deg, 
-            rgba(0, 255, 255, 0.1),
-            rgba(255, 0, 255, 0.1),
-            rgba(255, 255, 0, 0.1));
-        border: 2px solid transparent;
-        border-image: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
-        border-image-slice: 1;
-        border-radius: 20px;
-        padding: 20px;
-        margin: 10px 0;
-        position: relative;
-        overflow: hidden;
-        animation: cardFloat 3s ease-in-out infinite;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    @keyframes cardFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .cyber-card:hover {
-        transform: translateY(-15px) rotateX(5deg) scale(1.05);
-        box-shadow: 
-            0 20px 40px rgba(0, 255, 255, 0.4),
-            0 30px 60px rgba(255, 0, 255, 0.3);
-    }
-    
-    .cyber-card::before {
-        content: '';
-        position: absolute;
-        top: -100%;
-        left: -100%;
-        width: 300%;
-        height: 300%;
-        background: linear-gradient(
-            45deg,
-            transparent 30%,
-            rgba(0, 255, 255, 0.2) 50%,
-            transparent 70%
-        );
-        animation: scanline 3s linear infinite;
-    }
-    
-    @keyframes scanline {
-        0% { transform: translateY(-100%) translateX(-100%); }
-        100% { transform: translateY(100%) translateX(100%); }
-    }
-    
-    /* Holographic effect */
-    .hologram {
-        background: linear-gradient(
-            45deg,
-            rgba(0, 255, 255, 0.3),
-            rgba(255, 0, 255, 0.3),
-            rgba(0, 255, 255, 0.3)
-        );
-        background-size: 200% 200%;
-        animation: hologramShift 2s linear infinite;
+    /* Metric styling */
+    [data-testid="metric-container"] {
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+        padding: 1rem;
         border-radius: 15px;
-        padding: 15px;
-        position: relative;
+        border: 1px solid rgba(0, 255, 255, 0.5);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
     }
     
-    @keyframes hologramShift {
-        0% { background-position: 0% 0%; }
-        100% { background-position: 100% 100%; }
+    [data-testid="metric-container"] > div {
+        color: white !important;
     }
     
-    /* Glitch text effect */
-    .glitch {
-        position: relative;
-        color: #fff;
-        font-size: 4rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(0, 255, 255, 0.9);
-        animation: glitchAnim 2s infinite;
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        padding: 5px;
     }
     
-    .glitch::before,
-    .glitch::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+    .stTabs [data-baseweb="tab"] {
+        color: white;
+        font-weight: bold;
+        background: transparent;
     }
     
-    .glitch::before {
-        animation: glitchBefore 0.3s infinite;
-        color: #00ffff;
-        z-index: -1;
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(45deg, #00ffff, #ff00ff);
     }
     
-    .glitch::after {
-        animation: glitchAfter 0.3s infinite;
-        color: #ff00ff;
-        z-index: -2;
+    /* Info boxes */
+    .stInfo, .stSuccess, .stWarning, .stError {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(0, 255, 255, 0.5) !important;
+        border-radius: 10px;
     }
     
-    @keyframes glitchBefore {
-        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
-        20% { clip-path: inset(10% 0 50% 0); transform: translate(-5px); }
-        40% { clip-path: inset(40% 0 20% 0); transform: translate(5px); }
-        60% { clip-path: inset(80% 0 10% 0); transform: translate(0); }
-        80% { clip-path: inset(0 0 70% 0); transform: translate(-3px); }
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+        border-radius: 10px;
+        color: white !important;
     }
     
-    @keyframes glitchAfter {
-        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
-        20% { clip-path: inset(50% 0 30% 0); transform: translate(5px); }
-        40% { clip-path: inset(20% 0 60% 0); transform: translate(-5px); }
-        60% { clip-path: inset(70% 0 0 0); transform: translate(3px); }
-        80% { clip-path: inset(0 0 40% 0); transform: translate(0); }
+    /* Dataframe styling */
+    .dataframe {
+        background: rgba(0, 0, 0, 0.5) !important;
+        color: white !important;
     }
     
-    /* Particle effects */
-    .particles {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        overflow: hidden;
-        z-index: -1;
-    }
-    
-    .particle {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: radial-gradient(circle, rgba(0, 255, 255, 0.8) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: particleFloat 10s linear infinite;
-    }
-    
-    @keyframes particleFloat {
-        0% {
-            transform: translateY(100vh) translateX(0) scale(0);
-            opacity: 0;
-        }
-        10% {
-            opacity: 1;
-        }
-        90% {
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(-100vh) translateX(100px) scale(1.5);
-            opacity: 0;
-        }
-    }
-    
-    /* Radar scan effect */
-    .radar {
-        position: relative;
-        width: 200px;
-        height: 200px;
-        border: 2px solid #00ffff;
-        border-radius: 50%;
-        margin: 20px auto;
-        overflow: hidden;
-        background: radial-gradient(circle, transparent 30%, rgba(0, 255, 255, 0.1) 70%);
-    }
-    
-    .radar::before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: conic-gradient(
-            transparent 0deg,
-            rgba(0, 255, 255, 0.7) 30deg,
-            transparent 90deg
-        );
-        animation: radarScan 2s linear infinite;
-    }
-    
-    @keyframes radarScan {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Matrix rain effect */
-    .matrix-rain {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        opacity: 0.1;
-        z-index: -2;
-        overflow: hidden;
-    }
-    
-    .matrix-code {
-        position: absolute;
-        color: #00ff00;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        animation: matrixFall 5s linear infinite;
-    }
-    
-    @keyframes matrixFall {
-        0% {
-            transform: translateY(-100vh);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh);
-            opacity: 0;
-        }
-    }
-    
-    /* Pulse rings */
-    .pulse-ring {
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        border: 3px solid #00ffff;
-        border-radius: 50%;
-        animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-    }
-    
-    @keyframes pulseRing {
-        0% {
-            transform: scale(0.1);
-            opacity: 1;
-        }
-        100% {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-    
-    /* Loading bar */
-    .loading-bar {
-        width: 100%;
-        height: 4px;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 2px;
-        overflow: hidden;
-        margin: 10px 0;
-    }
-    
-    .loading-progress {
-        height: 100%;
+    /* Progress bar */
+    .stProgress > div > div {
         background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00);
-        background-size: 200% 100%;
-        animation: loadingSlide 2s linear infinite;
-        border-radius: 2px;
     }
     
-    @keyframes loadingSlide {
-        0% { 
-            transform: translateX(-100%);
-            background-position: 0% 50%;
-        }
-        100% { 
-            transform: translateX(0);
-            background-position: 100% 50%;
-        }
+    /* Headers */
+    .main h1 {
+        color: #00ffff;
+        text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-align: center;
+        animation: glow 2s ease-in-out infinite;
     }
     
-    /* Hide Streamlit defaults */
+    @keyframes glow {
+        0%, 100% { text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+        50% { text-shadow: 0 0 40px rgba(0, 255, 255, 1), 0 0 60px rgba(255, 0, 255, 0.8); }
+    }
+    
+    .main h2 {
+        color: #ff00ff;
+        text-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+    }
+    
+    .main h3 {
+        color: #ffff00;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+    }
+    
+    /* Column styling */
+    [data-testid="column"] {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 0.5rem;
+    }
+    
+    /* Input fields */
+    .stTextInput > div > div > input {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #00ffff !important;
+        color: white !important;
+        border-radius: 10px;
+    }
+    
+    .stSelectbox > div > div > select {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #ff00ff !important;
+        color: white !important;
+    }
+    
+    /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
     
-    /* Responsive text */
-    @media (max-width: 768px) {
-        .glitch { font-size: 2.5rem; }
-    }
-    </style>
-    
-    <div class="particles" id="particles"></div>
-    <div class="matrix-rain" id="matrix"></div>
-    
-    <script>
-    // Generate particles
-    const particlesContainer = document.getElementById('particles');
-    if (particlesContainer && particlesContainer.children.length === 0) {
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 10 + 's';
-            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-            particlesContainer.appendChild(particle);
-        }
+    /* Pulse animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
     }
     
-    // Generate matrix rain
-    const matrixContainer = document.getElementById('matrix');
-    if (matrixContainer && matrixContainer.children.length === 0) {
-        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-        for (let i = 0; i < 30; i++) {
-            const code = document.createElement('div');
-            code.className = 'matrix-code';
-            code.style.left = Math.random() * 100 + '%';
-            code.style.animationDelay = Math.random() * 5 + 's';
-            let text = '';
-            for (let j = 0; j < 20; j++) {
-                text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
-            }
-            code.innerHTML = text;
-            matrixContainer.appendChild(code);
-        }
+    .stMetric {
+        animation: pulse 2s infinite;
     }
-    </script>
-    """, unsafe_allow_html=True)
-
-# Animated header with glitch effect
-st.markdown("""
-    <div style="text-align: center; padding: 2rem 0;">
-        <h1 class="glitch" data-text="COMPLIANCEWATCH">COMPLIANCEWATCH</h1>
-        <p class="neon-text" style="font-size: 1.5rem; letter-spacing: 5px;">NEXT-GEN AI MONITORING SYSTEM</p>
-        <div class="loading-bar">
-            <div class="loading-progress" style="width: 100%;"></div>
-        </div>
-    </div>
+</style>
 """, unsafe_allow_html=True)
 
-# Sidebar with cyberpunk styling
+# Main title with subtitle
+st.markdown("<h1>🚀 COMPLIANCEWATCH QUANTUM</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: #ff00ff;'>AI-POWERED PHARMACEUTICAL SURVEILLANCE SYSTEM</h3>", unsafe_allow_html=True)
+
+# Create animated progress bar at top
+progress_bar = st.progress(0)
+for i in range(100):
+    progress_bar.progress(i + 1)
+    time.sleep(0.001)
+st.empty()
+
+# Sidebar with futuristic controls
 with st.sidebar:
-    st.markdown("""
-        <div class="cyber-card" style="text-align: center;">
-            <div class="radar">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ffff; font-weight: bold;">
-                    SCANNING
-                </div>
-            </div>
-            <h2 class="neon-text">CONTROL MATRIX</h2>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #00ffff; text-align: center;'>⚡ CONTROL MATRIX ⚡</h2>", unsafe_allow_html=True)
     
-    # Animated input fields
+    # Animated divider
+    st.markdown("---")
+    
+    # Drug input with emoji
     drug_name = st.text_input(
-        "🧬 TARGET COMPOUND",
-        placeholder="Enter pharma agent...",
-        help="Specify molecular target for surveillance"
+        "🧬 **TARGET COMPOUND**",
+        placeholder="Enter molecular target...",
+        help="AI will scan for this pharmaceutical agent"
     )
     
-    # Futuristic multi-select
+    # Data sources with icons
+    st.markdown("### 📡 **DATA STREAMS**")
     data_sources = st.multiselect(
-        "📡 DATA STREAMS",
-        ["🌐 Reddit Neural Net", "🐦 X Platform", "👥 Meta Networks", 
-         "🏥 Patient Hubs", "🔬 FDA Quantum DB", "🧠 GPT-5 Analysis"],
-        default=["🌐 Reddit Neural Net", "🔬 FDA Quantum DB"]
+        "",
+        ["🌐 Reddit Neural", "🐦 X Platform", "👥 Meta Networks", 
+         "🏥 Medical Hubs", "🔬 FDA Quantum", "🧠 GPT-5 Engine"],
+        default=["🌐 Reddit Neural", "🔬 FDA Quantum"],
+        label_visibility="collapsed"
     )
     
-    # Holographic time selector
+    # Animated slider
+    st.markdown("### ⏰ **TEMPORAL SCAN**")
     time_range = st.select_slider(
-        "⏳ TEMPORAL SCAN",
-        options=["1H", "6H", "24H", "7D", "30D", "90D", "365D"],
-        value="7D",
-        help="Temporal analysis window"
+        "",
+        options=["⚡ 1H", "🔥 6H", "☀️ 24H", "📅 7D", "📆 30D", "📊 90D", "🌍 365D"],
+        value="📅 7D",
+        label_visibility="collapsed"
     )
     
-    # Neon severity slider
-    severity = st.slider(
-        "⚡ THREAT LEVEL",
-        min_value=0,
-        max_value=100,
-        value=50,
-        step=5,
+    # Threat level with color
+    st.markdown("### 🎯 **SENSITIVITY MATRIX**")
+    threat_level = st.slider(
+        "",
+        0, 100, 50,
         format="%d%%",
-        help="Neural network sensitivity threshold"
+        help="Neural network detection threshold",
+        label_visibility="collapsed"
+    )
+    
+    # Color picker for theme
+    st.markdown("### 🎨 **INTERFACE THEME**")
+    theme = st.radio(
+        "",
+        ["🔷 Cyber Blue", "🟣 Neon Purple", "🔶 Plasma Orange", "🟢 Matrix Green"],
+        label_visibility="collapsed"
     )
     
     st.markdown("---")
     
-    # Animated launch button
-    if st.button("🚀 INITIATE QUANTUM SCAN", use_container_width=True):
-        st.session_state.monitoring_active = True
+    # Launch button
+    if st.button("🚀 **INITIATE QUANTUM SCAN**", use_container_width=True):
+        st.session_state.monitoring = True
         st.balloons()
+        st.success("✅ SYSTEMS ONLINE")
         
-    if st.session_state.monitoring_active:
-        st.markdown("""
-            <div class="hologram" style="text-align: center;">
-                <p style="color: #00ff00; font-weight: bold;">✅ SYSTEMS ONLINE</p>
-                <p style="color: #00ffff;">Neural Net: Active</p>
-                <p style="color: #ff00ff;">Quantum Core: 98.7%</p>
-                <p style="color: #ffff00;">Scan Rate: 1.2M/sec</p>
-            </div>
-        """, unsafe_allow_html=True)
+    # System status
+    if st.session_state.monitoring:
+        st.markdown("### 📊 **SYSTEM STATUS**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("CPU", f"{random.randint(70, 99)}%", f"↑{random.randint(1, 10)}%")
+        with col2:
+            st.metric("RAM", f"{random.randint(60, 95)}%", f"↑{random.randint(1, 15)}%")
+        
+        st.metric("Neural Net", "🟢 ACTIVE", "Optimal")
+        
+        # Live counter
+        if st.button("📊 Refresh Stats"):
+            st.session_state.counter += 1
 
-# Main content area with extreme animations
-if st.session_state.monitoring_active and drug_name:
+# Main content area
+if st.session_state.monitoring and drug_name:
     
-    # Create ultra-modern tabs
-    tabs = st.tabs(["⚡ COMMAND CENTER", "🎯 THREAT MATRIX", "🧠 NEURAL ANALYTICS", 
-                    "🌍 GLOBAL HEATMAP", "🔮 PREDICTIVE AI", "🎮 SIMULATION"])
+    # Create futuristic tabs with emojis
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "⚡ DASHBOARD", 
+        "🎯 ALERTS", 
+        "🧠 NEURAL AI", 
+        "🌍 GLOBAL MAP", 
+        "🔮 PREDICTIONS",
+        "🎮 SIMULATOR"
+    ])
     
-    with tabs[0]:  # Command Center
-        # Live metrics with extreme styling
-        st.markdown("""
-            <div class="cyber-card">
-                <h2 style="text-align: center; color: #00ffff;">REAL-TIME METRICS</h2>
-            </div>
-        """, unsafe_allow_html=True)
+    with tab1:
+        st.markdown("## ⚡ REAL-TIME MONITORING DASHBOARD")
         
+        # Animated metrics row
         col1, col2, col3, col4 = st.columns(4)
         
-        # Animated metrics
         with col1:
-            metric_val = 1247 + random.randint(-50, 50)
+            events = 1247 + random.randint(-50, 50)
             st.metric(
-                "⚡ EVENTS DETECTED",
-                f"{metric_val:,}",
-                f"↑ {random.randint(10, 100)}/min",
+                label="⚡ Total Events",
+                value=f"{events:,}",
+                delta=f"+{random.randint(10, 100)} today",
                 delta_color="normal"
             )
         
         with col2:
             st.metric(
-                "🔴 CRITICAL ALERTS",
-                random.randint(5, 15),
-                "IMMEDIATE ACTION",
+                label="🔴 Critical Alerts",
+                value=random.randint(3, 8),
+                delta="URGENT",
                 delta_color="inverse"
             )
         
         with col3:
             st.metric(
-                "🚀 SPEED BOOST",
-                f"{random.randint(40, 60)}h",
-                "vs Traditional",
+                label="⚡ Detection Speed",
+                value=f"{random.randint(40, 60)}h faster",
+                delta="vs traditional",
                 delta_color="normal"
             )
         
         with col4:
             accuracy = 94.7 + random.uniform(-2, 2)
             st.metric(
-                "🎯 ACCURACY",
-                f"{accuracy:.1f}%",
-                f"↑ {random.uniform(0.1, 3):.1f}%",
+                label="🎯 AI Accuracy",
+                value=f"{accuracy:.1f}%",
+                delta=f"+{random.uniform(0.1, 3):.1f}%",
                 delta_color="normal"
             )
         
-        # 3D animated chart
-        st.markdown("### 🌌 QUANTUM VISUALIZATION")
+        st.markdown("---")
         
-        # Generate dynamic 3D surface
-        x = np.linspace(-5, 5, 50)
-        y = np.linspace(-5, 5, 50)
+        # Create stunning 3D visualization
+        st.markdown("### 🌌 3D QUANTUM VISUALIZATION")
+        
+        # Generate 3D surface data
+        x = np.linspace(-5, 5, 100)
+        y = np.linspace(-5, 5, 100)
         X, Y = np.meshgrid(x, y)
-        Z = np.sin(np.sqrt(X**2 + Y**2 + st.session_state.animation_counter))
+        Z = np.sin(np.sqrt(X**2 + Y**2)) * np.cos(X/2) * np.sin(Y/2)
         
         fig = go.Figure(data=[go.Surface(
             z=Z,
-            colorscale=[
-                [0, '#000033'],
-                [0.2, '#000055'],
-                [0.4, '#0000ff'],
-                [0.6, '#00ffff'],
-                [0.8, '#ff00ff'],
-                [1, '#ffff00']
-            ],
-            showscale=False,
-            lighting=dict(
-                ambient=0.2,
-                diffuse=0.8,
-                fresnel=0.2,
-                specular=0.8,
-                roughness=0.2
-            ),
-            lightposition=dict(x=-1000, y=1000, z=100)
+            colorscale='Viridis',
+            contours={
+                "z": {"show": True, "start": -1, "end": 1, "size": 0.1, "color": "white"}
+            },
+            showscale=False
         )])
+        
+        # Camera rotation animation
+        camera = dict(
+            eye=dict(x=1.5, y=1.5, z=1.5),
+            center=dict(x=0, y=0, z=0)
+        )
         
         fig.update_layout(
             scene=dict(
-                xaxis=dict(visible=False),
-                yaxis=dict(visible=False),
-                zaxis=dict(visible=False),
+                xaxis=dict(showbackground=False, visible=False),
+                yaxis=dict(showbackground=False, visible=False),
+                zaxis=dict(showbackground=False, visible=False),
                 bgcolor='rgba(0,0,0,0)',
-                camera=dict(
-                    eye=dict(
-                        x=1.5 * np.cos(st.session_state.animation_counter/10),
-                        y=1.5 * np.sin(st.session_state.animation_counter/10),
-                        z=1.5
-                    )
-                )
+                camera=camera
             ),
-            height=400,
+            height=500,
             margin=dict(l=0, r=0, t=0, b=0),
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)'
         )
         
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Real-time data stream
+        st.markdown("### 📊 LIVE DATA STREAMS")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Animated bar chart
+            categories = ['Critical', 'High', 'Medium', 'Low', 'Info']
+            values = [random.randint(1, 10), random.randint(10, 30), 
+                     random.randint(30, 60), random.randint(60, 100),
+                     random.randint(100, 200)]
+            colors = ['#ff0000', '#ff6600', '#ffff00', '#00ff00', '#00ffff']
+            
+            fig_bar = go.Figure(data=[
+                go.Bar(x=categories, y=values, 
+                      marker_color=colors,
+                      text=values,
+                      textposition='outside')
+            ])
+            
+            fig_bar.update_layout(
+                title="Severity Distribution",
+                height=300,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0.2)',
+                font=dict(color='white'),
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig_bar, use_container_width=True)
+        
+        with col2:
+            # Animated pie chart
+            fig_pie = go.Figure(data=[go.Pie(
+                labels=['Reddit', 'Twitter', 'FDA', 'Forums', 'Medical'],
+                values=[random.randint(20, 40), random.randint(15, 30),
+                       random.randint(25, 35), random.randint(10, 20),
+                       random.randint(5, 15)],
+                hole=.7,
+                marker_colors=['#00ffff', '#ff00ff', '#ffff00', '#00ff00', '#ff6600']
+            )])
+            
+            fig_pie.update_layout(
+                title="Source Distribution",
+                height=300,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                showlegend=True,
+                annotations=[dict(text='SOURCES', x=0.5, y=0.5, 
+                                font_size=20, showarrow=False,
+                                font=dict(color='white'))]
+            )
+            
+            st.plotly_chart(fig_pie, use_container_width=True)
     
-    with tabs[1]:  # Threat Matrix
-        st.markdown("""
-            <div class="cyber-card">
-                <h2 style="text-align: center; color: #ff00ff;">🎯 ACTIVE THREAT MATRIX</h2>
-            </div>
-        """, unsafe_allow_html=True)
+    with tab2:
+        st.markdown("## 🎯 REAL-TIME ALERT SYSTEM")
         
         # Generate dynamic alerts
-        alert_types = [
-            ("🔴 CRITICAL", "Anaphylactic cascade detected", 95, "#ff0000"),
-            ("🟡 WARNING", "Neurological anomaly pattern", 72, "#ffff00"),
-            ("🟢 MONITOR", "Gastric disturbance cluster", 45, "#00ff00"),
-            ("🔵 INFO", "Mild reaction variance", 23, "#00ffff")
+        alert_levels = ["🔴 CRITICAL", "🟠 HIGH", "🟡 MEDIUM", "🟢 LOW", "🔵 INFO"]
+        alert_messages = [
+            f"Severe adverse reaction cluster detected for {drug_name}",
+            f"Unusual symptom pattern emerging in {drug_name} users",
+            f"Moderate side effects reported for {drug_name}",
+            f"Minor reactions logged for {drug_name}",
+            f"Routine monitoring update for {drug_name}"
         ]
         
-        for alert_type, desc, threat_level, color in alert_types:
-            with st.container():
-                st.markdown(f"""
-                    <div class="cyber-card" style="border-color: {color};">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <span style="font-size: 1.5rem; color: {color};">{alert_type}</span>
-                                <div style="color: white; margin: 10px 0;">{desc}</div>
-                                <div class="loading-bar" style="width: 200px;">
-                                    <div class="loading-progress" style="width: {threat_level}%;"></div>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 2rem; color: {color};">{threat_level}%</div>
-                                <small style="color: #00ffff;">Confidence</small>
-                            </div>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-    
-    with tabs[2]:  # Neural Analytics
-        st.markdown("### 🧠 NEURAL NETWORK ANALYSIS")
+        for i, (level, message) in enumerate(zip(alert_levels, alert_messages)):
+            col1, col2, col3 = st.columns([3, 1, 1])
+            
+            with col1:
+                if "CRITICAL" in level:
+                    st.error(f"{level}: {message}")
+                elif "HIGH" in level:
+                    st.warning(f"{level}: {message}")
+                elif "MEDIUM" in level:
+                    st.info(f"{level}: {message}")
+                else:
+                    st.success(f"{level}: {message}")
+            
+            with col2:
+                st.metric("Confidence", f"{random.randint(70, 99)}%")
+            
+            with col3:
+                st.button(f"View Details", key=f"alert_{i}")
         
-        # Create animated neural network visualization
-        time_data = pd.date_range(start='2025-01-01', periods=100, freq='H')
+        # Alert statistics
+        st.markdown("---")
+        st.markdown("### 📊 ALERT STATISTICS")
         
-        # Generate multiple interconnected signals
-        signals = {}
-        for i, signal_name in enumerate(['Alpha', 'Beta', 'Gamma', 'Delta', 'Theta']):
-            base = np.sin(np.linspace(0, 4*np.pi, 100) + i*np.pi/5)
-            noise = np.random.normal(0, 0.1, 100)
-            signals[signal_name] = base + noise + i*0.5
+        # Create alert timeline
+        hours = list(range(24))
+        alert_counts = [random.randint(0, 20) for _ in range(24)]
         
-        fig = go.Figure()
-        
-        colors = ['#00ffff', '#ff00ff', '#ffff00', '#00ff00', '#ff0000']
-        for i, (signal_name, signal_data) in enumerate(signals.items()):
-            fig.add_trace(go.Scatter(
-                x=time_data,
-                y=signal_data,
-                name=f'Neural Stream {signal_name}',
-                mode='lines',
-                line=dict(
-                    color=colors[i],
-                    width=2,
-                    shape='spline'
-                ),
-                fill='tonexty' if i > 0 else 'tozeroy',
-                fillcolor=f'rgba{tuple(list(int(colors[i][j:j+2], 16) for j in (1, 3, 5)) + [0.05])}'
-            ))
-        
-        fig.update_layout(
-            template='plotly_dark',
-            height=500,
-            hovermode='x unified',
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
-            xaxis=dict(
-                showgrid=True,
-                gridcolor='rgba(0,255,255,0.1)'
-            ),
-            yaxis=dict(
-                showgrid=True,
-                gridcolor='rgba(255,0,255,0.1)'
-            )
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # AI Confidence Metrics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown("""
-                <div class="hologram">
-                    <h4 style="color: #00ffff;">Pattern Recognition</h4>
-                    <div style="font-size: 2rem; color: #ffff00;">98.3%</div>
-                </div>
-            """, unsafe_allow_html=True)
-        with col2:
-            st.markdown("""
-                <div class="hologram">
-                    <h4 style="color: #ff00ff;">Anomaly Detection</h4>
-                    <div style="font-size: 2rem; color: #00ff00;">Active</div>
-                </div>
-            """, unsafe_allow_html=True)
-        with col3:
-            st.markdown("""
-                <div class="hologram">
-                    <h4 style="color: #ffff00;">Prediction Accuracy</h4>
-                    <div style="font-size: 2rem; color: #00ffff;">94.7%</div>
-                </div>
-            """, unsafe_allow_html=True)
-    
-    with tabs[3]:  # Global Heatmap
-        st.markdown("### 🌍 GLOBAL SURVEILLANCE MATRIX")
-        
-        # Create animated scatter mapbox
-        cities_data = pd.DataFrame({
-            'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 
-                    'London', 'Paris', 'Tokyo', 'Sydney', 'Mumbai'],
-            'lat': [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
-                   51.5074, 48.8566, 35.6762, -33.8688, 19.0760],
-            'lon': [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
-                   -0.1278, 2.3522, 139.6503, 151.2093, 72.8777],
-            'intensity': np.random.randint(20, 100, 10),
-            'events': np.random.randint(50, 500, 10)
-        })
-        
-        fig = go.Figure()
-        
-        # Add animated heatmap layer
-        fig.add_trace(go.Scattermapbox(
-            lat=cities_data['lat'],
-            lon=cities_data['lon'],
-            mode='markers+text',
-            marker=dict(
-                size=cities_data['intensity']/2,
-                color=cities_data['intensity'],
-                colorscale=[
-                    [0, '#000033'],
-                    [0.2, '#0000ff'],
-                    [0.5, '#00ffff'],
-                    [0.8, '#ff00ff'],
-                    [1, '#ffff00']
-                ],
-                showscale=True,
-                colorbar=dict(
-                    title="Threat Level",
-                    tickfont=dict(color='white'),
-                    titlefont=dict(color='white')
-                ),
-                opacity=0.8
-            ),
-            text=cities_data['City'],
-            textfont=dict(color='white', size=12),
-            hovertemplate='<b>%{text}</b><br>Events: %{marker.size}<br>Threat: %{marker.color}<extra></extra>'
+        fig_timeline = go.Figure()
+        fig_timeline.add_trace(go.Scatter(
+            x=hours,
+            y=alert_counts,
+            mode='lines+markers',
+            name='Alerts/Hour',
+            line=dict(color='#00ffff', width=3),
+            marker=dict(size=8, color='#ff00ff'),
+            fill='tonexty',
+            fillcolor='rgba(0, 255, 255, 0.2)'
         ))
         
-        fig.update_layout(
-            mapbox=dict(
-                style='carto-darkmatter',
-                center=dict(lat=30, lon=0),
-                zoom=1.5
-            ),
-            height=600,
-            margin=dict(l=0, r=0, t=0, b=0),
+        fig_timeline.update_layout(
+            title="24-Hour Alert Timeline",
+            xaxis_title="Hour",
+            yaxis_title="Alert Count",
+            height=300,
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0.2)',
+            font=dict(color='white')
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig_timeline, use_container_width=True)
     
-    with tabs[4]:  # Predictive AI
-        st.markdown("""
-            <div class="cyber-card">
-                <h2 style="text-align: center; color: #00ff00;">🔮 QUANTUM PREDICTION ENGINE</h2>
-            </div>
-        """, unsafe_allow_html=True)
+    with tab3:
+        st.markdown("## 🧠 NEURAL NETWORK ANALYSIS")
         
-        # Generate future predictions
-        future_dates = pd.date_range(start=datetime.now(), periods=30, freq='D')
+        # Create neural network visualization
+        st.markdown("### 🔮 AI CONFIDENCE METRICS")
         
-        prediction_data = pd.DataFrame({
-            'Date': future_dates,
-            'Predicted_Events': np.random.exponential(scale=50, size=30) + 100,
-            'Confidence_Lower': np.random.exponential(scale=30, size=30) + 50,
-            'Confidence_Upper': np.random.exponential(scale=70, size=30) + 150
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Pattern Recognition", f"{random.randint(92, 99)}%", "↑ Optimal")
+        with col2:
+            st.metric("Anomaly Detection", f"{random.randint(88, 97)}%", "↑ Active")
+        with col3:
+            st.metric("Prediction Accuracy", f"{random.randint(91, 98)}%", "↑ Rising")
+        with col4:
+            st.metric("Learning Rate", f"{random.uniform(0.001, 0.01):.4f}", "Stable")
+        
+        st.markdown("---")
+        
+        # Neural network activity visualization
+        st.markdown("### 🌐 NEURAL PATHWAY ACTIVITY")
+        
+        # Generate multiple signal traces
+        time_points = np.linspace(0, 10, 500)
+        
+        fig_neural = make_subplots(
+            rows=3, cols=1,
+            subplot_titles=('Alpha Waves', 'Beta Waves', 'Gamma Waves'),
+            vertical_spacing=0.1
+        )
+        
+        # Alpha waves
+        alpha = np.sin(2 * np.pi * 1 * time_points) + np.random.normal(0, 0.1, 500)
+        fig_neural.add_trace(
+            go.Scatter(x=time_points, y=alpha, name='Alpha',
+                      line=dict(color='#00ffff', width=2)),
+            row=1, col=1
+        )
+        
+        # Beta waves
+        beta = np.sin(2 * np.pi * 2 * time_points) * np.cos(time_points) + np.random.normal(0, 0.1, 500)
+        fig_neural.add_trace(
+            go.Scatter(x=time_points, y=beta, name='Beta',
+                      line=dict(color='#ff00ff', width=2)),
+            row=2, col=1
+        )
+        
+        # Gamma waves
+        gamma = np.sin(2 * np.pi * 4 * time_points) * np.sin(time_points/2) + np.random.normal(0, 0.1, 500)
+        fig_neural.add_trace(
+            go.Scatter(x=time_points, y=gamma, name='Gamma',
+                      line=dict(color='#ffff00', width=2)),
+            row=3, col=1
+        )
+        
+        fig_neural.update_layout(
+            height=600,
+            showlegend=False,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0.2)',
+            font=dict(color='white')
+        )
+        
+        st.plotly_chart(fig_neural, use_container_width=True)
+        
+        # AI Decision Matrix
+        st.markdown("### 🎯 AI DECISION MATRIX")
+        
+        decision_data = pd.DataFrame({
+            'Factor': ['Data Quality', 'Pattern Match', 'Historical Correlation', 
+                      'Severity Score', 'Confidence Level'],
+            'Weight': [0.25, 0.30, 0.15, 0.20, 0.10],
+            'Score': [random.uniform(0.8, 1.0) for _ in range(5)]
         })
         
-        fig = go.Figure()
+        decision_data['Contribution'] = decision_data['Weight'] * decision_data['Score']
         
-        # Add prediction band
-        fig.add_trace(go.Scatter(
-            x=prediction_data['Date'],
-            y=prediction_data['Confidence_Upper'],
-            fill=None,
-            mode='lines',
-            line=dict(color='rgba(0,255,255,0)', width=0),
+        st.dataframe(decision_data.style.highlight_max(axis=0), use_container_width=True)
+    
+    with tab4:
+        st.markdown("## 🌍 GLOBAL SURVEILLANCE MAP")
+        
+        # Create world map visualization
+        locations = pd.DataFrame({
+            'City': ['New York', 'London', 'Tokyo', 'Sydney', 'Mumbai', 'Cairo',
+                    'São Paulo', 'Moscow', 'Beijing', 'Los Angeles'],
+            'lat': [40.7, 51.5, 35.7, -33.9, 19.1, 30.0, -23.5, 55.8, 39.9, 34.1],
+            'lon': [-74.0, -0.1, 139.7, 151.2, 72.9, 31.2, -46.6, 37.6, 116.4, -118.2],
+            'alerts': [random.randint(10, 100) for _ in range(10)],
+            'severity': [random.choice(['Critical', 'High', 'Medium', 'Low']) for _ in range(10)]
+        })
+        
+        fig_map = px.scatter_mapbox(
+            locations,
+            lat='lat',
+            lon='lon',
+            size='alerts',
+            color='severity',
+            hover_name='City',
+            hover_data=['alerts'],
+            color_discrete_map={'Critical': '#ff0000', 'High': '#ff6600', 
+                              'Medium': '#ffff00', 'Low': '#00ff00'},
+            zoom=1,
+            height=600
+        )
+        
+        fig_map.update_layout(
+            mapbox_style='carto-darkmatter',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin={"r":0,"t":0,"l":0,"b":0}
+        )
+        
+        st.plotly_chart(fig_map, use_container_width=True)
+        
+        # Regional statistics
+        st.markdown("### 📊 REGIONAL STATISTICS")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.info(f"🌎 **Americas**: {random.randint(200, 400)} events")
+        with col2:
+            st.info(f"🌍 **EMEA**: {random.randint(150, 350)} events")
+        with col3:
+            st.info(f"🌏 **APAC**: {random.randint(180, 380)} events")
+    
+    with tab5:
+        st.markdown("## 🔮 PREDICTIVE ANALYTICS")
+        
+        # Generate prediction data
+        future_days = 30
+        dates = pd.date_range(start=datetime.now(), periods=future_days, freq='D')
+        
+        # Create prediction with confidence intervals
+        base_prediction = 100 + np.cumsum(np.random.randn(future_days) * 5)
+        upper_bound = base_prediction + np.random.uniform(10, 30, future_days)
+        lower_bound = base_prediction - np.random.uniform(10, 30, future_days)
+        
+        fig_pred = go.Figure()
+        
+        # Add confidence band
+        fig_pred.add_trace(go.Scatter(
+            x=dates, y=upper_bound,
+            fill=None, mode='lines',
+            line_color='rgba(0,0,0,0)',
             showlegend=False
         ))
         
-        fig.add_trace(go.Scatter(
-            x=prediction_data['Date'],
-            y=prediction_data['Confidence_Lower'],
+        fig_pred.add_trace(go.Scatter(
+            x=dates, y=lower_bound,
             fill='tonexty',
             mode='lines',
-            line=dict(color='rgba(0,255,255,0)', width=0),
+            line_color='rgba(0,0,0,0)',
             name='Confidence Band',
-            fillcolor='rgba(0,255,255,0.2)'
+            fillcolor='rgba(0, 255, 255, 0.2)'
         ))
         
-        # Add main prediction line
-        fig.add_trace(go.Scatter(
-            x=prediction_data['Date'],
-            y=prediction_data['Predicted_Events'],
+        # Add prediction line
+        fig_pred.add_trace(go.Scatter(
+            x=dates, y=base_prediction,
             mode='lines+markers',
             name='AI Prediction',
-            line=dict(color='#00ffff', width=3),
-            marker=dict(size=8, color='#ff00ff', symbol='diamond')
+            line=dict(color='#ff00ff', width=3),
+            marker=dict(size=6, color='#ffff00')
         ))
         
-        fig.update_layout(
-            template='plotly_dark',
+        fig_pred.update_layout(
+            title="30-Day Event Forecast",
+            xaxis_title="Date",
+            yaxis_title="Predicted Events",
             height=400,
-            title=dict(
-                text='30-DAY QUANTUM FORECAST',
-                font=dict(color='#00ffff', size=20)
-            ),
-            xaxis=dict(showgrid=True, gridcolor='rgba(0,255,255,0.1)'),
-            yaxis=dict(showgrid=True, gridcolor='rgba(255,0,255,0.1)'),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0.2)',
+            font=dict(color='white'),
             hovermode='x unified'
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig_pred, use_container_width=True)
         
         # Prediction metrics
+        st.markdown("### 📊 FORECAST METRICS")
+        
         col1, col2, col3, col4 = st.columns(4)
+        
         with col1:
-            st.markdown("""
-                <div class="cyber-card">
-                    <h4 style="color: #00ffff;">Peak Risk</h4>
-                    <div style="font-size: 1.5rem; color: #ff0000;">Day 17</div>
-                </div>
-            """, unsafe_allow_html=True)
+            st.warning(f"⚠️ **Peak Risk**: Day {random.randint(10, 20)}")
         with col2:
-            st.markdown("""
-                <div class="cyber-card">
-                    <h4 style="color: #ff00ff;">Trend</h4>
-                    <div style="font-size: 1.5rem; color: #ffff00;">↗ Rising</div>
-                </div>
-            """, unsafe_allow_html=True)
+            st.info(f"📈 **Trend**: {'Increasing' if random.random() > 0.5 else 'Stable'}")
         with col3:
-            st.markdown("""
-                <div class="cyber-card">
-                    <h4 style="color: #ffff00;">Volatility</h4>
-                    <div style="font-size: 1.5rem; color: #00ff00;">Moderate</div>
-                </div>
-            """, unsafe_allow_html=True)
+            st.success(f"✅ **Confidence**: {random.randint(85, 95)}%")
         with col4:
-            st.markdown("""
-                <div class="cyber-card">
-                    <h4 style="color: #00ff00;">Action</h4>
-                    <div style="font-size: 1.5rem; color: #00ffff;">Monitor</div>
-                </div>
-            """, unsafe_allow_html=True)
+            st.error(f"🎯 **Action**: {'Monitor' if random.random() > 0.3 else 'Alert'}")
     
-    with tabs[5]:  # Simulation
-        st.markdown("""
-            <div class="cyber-card">
-                <h2 style="text-align: center; color: #ff00ff;">🎮 INTERACTIVE SIMULATION CHAMBER</h2>
-            </div>
-        """, unsafe_allow_html=True)
+    with tab6:
+        st.markdown("## 🎮 SIMULATION CHAMBER")
+        
+        st.info("🔬 **Configure simulation parameters and run predictive scenarios**")
         
         col1, col2 = st.columns([2, 1])
         
         with col1:
             # Simulation controls
-            sim_population = st.slider("Population Size", 1000, 100000, 50000, 1000)
-            sim_exposure = st.slider("Exposure Rate (%)", 0, 100, 30, 5)
-            sim_severity = st.slider("Severity Multiplier", 0.1, 5.0, 1.0, 0.1)
+            st.markdown("### ⚙️ SIMULATION PARAMETERS")
             
-            if st.button("🚀 RUN SIMULATION", use_container_width=True):
-                with st.spinner("Running quantum simulation..."):
-                    time.sleep(2)
-                    
-                    # Generate simulation results
-                    affected = int(sim_population * sim_exposure / 100)
-                    critical = int(affected * sim_severity * 0.1)
-                    moderate = int(affected * 0.3)
-                    mild = affected - critical - moderate
-                    
-                    st.success("Simulation Complete!")
-                    
-                    # Display results
-                    st.markdown(f"""
-                        <div class="hologram">
-                            <h3 style="color: #00ffff;">SIMULATION RESULTS</h3>
-                            <p>Total Affected: <span style="color: #ffff00; font-size: 1.5rem;">{affected:,}</span></p>
-                            <p>Critical Cases: <span style="color: #ff0000; font-size: 1.2rem;">{critical:,}</span></p>
-                            <p>Moderate Cases: <span style="color: #ff00ff; font-size: 1.2rem;">{moderate:,}</span></p>
-                            <p>Mild Cases: <span style="color: #00ff00; font-size: 1.2rem;">{mild:,}</span></p>
-                        </div>
-                    """, unsafe_allow_html=True)
+            population = st.number_input("Population Size", 1000, 1000000, 100000, 10000)
+            exposure_rate = st.slider("Exposure Rate (%)", 0, 100, 30)
+            severity_mult = st.slider("Severity Multiplier", 0.1, 5.0, 1.0, 0.1)
+            time_horizon = st.selectbox("Time Horizon", ["1 Week", "1 Month", "3 Months", "1 Year"])
+            
+            if st.button("🚀 **RUN SIMULATION**", use_container_width=True):
+                # Show loading animation
+                with st.spinner("🧬 Running quantum simulation..."):
+                    progress = st.progress(0)
+                    for i in range(100):
+                        progress.progress(i + 1)
+                        time.sleep(0.01)
+                
+                # Calculate results
+                affected = int(population * exposure_rate / 100)
+                critical = int(affected * severity_mult * 0.05)
+                severe = int(affected * severity_mult * 0.15)
+                moderate = int(affected * 0.30)
+                mild = affected - critical - severe - moderate
+                
+                # Display results
+                st.success("✅ **SIMULATION COMPLETE**")
+                
+                # Results visualization
+                results_df = pd.DataFrame({
+                    'Category': ['Critical', 'Severe', 'Moderate', 'Mild'],
+                    'Count': [critical, severe, moderate, mild],
+                    'Percentage': [
+                        f"{critical/affected*100:.1f}%",
+                        f"{severe/affected*100:.1f}%",
+                        f"{moderate/affected*100:.1f}%",
+                        f"{mild/affected*100:.1f}%"
+                    ]
+                })
+                
+                st.dataframe(results_df, use_container_width=True)
+                
+                # Visualization
+                fig_sim = px.funnel(
+                    results_df,
+                    y='Category',
+                    x='Count',
+                    color='Category',
+                    color_discrete_map={
+                        'Critical': '#ff0000',
+                        'Severe': '#ff6600',
+                        'Moderate': '#ffff00',
+                        'Mild': '#00ff00'
+                    }
+                )
+                
+                fig_sim.update_layout(
+                    height=300,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white')
+                )
+                
+                st.plotly_chart(fig_sim, use_container_width=True)
         
         with col2:
-            st.markdown("""
-                <div class="cyber-card" style="background: rgba(0,255,255,0.1);">
-                    <h4 style="color: #00ffff;">PARAMETERS</h4>
-                    <div class="loading-bar"><div class="loading-progress"></div></div>
-                    <small style="color: white;">
-                        • Quantum Core: Active<br>
-                        • Neural Net: Online<br>
-                        • GPU Cluster: 100%<br>
-                        • RAM Usage: 87.3%<br>
-                        • Threads: 1024
-                    </small>
-                </div>
-            """, unsafe_allow_html=True)
-    
-    # Auto-update animation counter
-    st.session_state.animation_counter += 1
-    if st.session_state.animation_counter % 10 == 0:
-        st.rerun()
+            st.markdown("### 📊 SYSTEM LOAD")
+            
+            # System metrics during simulation
+            st.metric("CPU Usage", f"{random.randint(60, 95)}%")
+            st.metric("Memory", f"{random.randint(4, 8):.1f} GB")
+            st.metric("GPU Cores", f"{random.randint(1000, 2000)}")
+            st.metric("Iterations", f"{random.randint(10000, 100000):,}")
+            
+            # Status indicator
+            st.markdown("---")
+            st.success("🟢 **All Systems Operational**")
 
 else:
-    # Ultra-futuristic welcome screen
-    st.markdown("""
-        <div class="cyber-card" style="max-width: 1000px; margin: 2rem auto; padding: 3rem;">
-            <h1 style="text-align: center; color: #00ffff; font-size: 3rem; margin-bottom: 2rem;">
-                WELCOME TO THE FUTURE
-            </h1>
-            
-            <div style="text-align: center; margin-bottom: 3rem;">
-                <p style="color: #ff00ff; font-size: 1.5rem;">
-                    QUANTUM-ENHANCED PHARMACEUTICAL SURVEILLANCE
-                </p>
-                <p style="color: #ffff00; font-size: 1.2rem;">
-                    Powered by Neural Networks • AI-Driven • Real-Time
-                </p>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin: 3rem 0;">
-                <div class="hologram" style="text-align: center;">
-                    <div style="font-size: 3rem;">🧬</div>
-                    <h3 style="color: #00ffff;">MOLECULAR SCANNING</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Quantum-level analysis</p>
-                </div>
-                
-                <div class="hologram" style="text-align: center;">
-                    <div style="font-size: 3rem;">🔮</div>
-                    <h3 style="color: #ff00ff;">PREDICTIVE AI</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Future event modeling</p>
-                </div>
-                
-                <div class="hologram" style="text-align: center;">
-                    <div style="font-size: 3rem;">⚡</div>
-                    <h3 style="color: #ffff00;">INSTANT ALERTS</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Nanosecond response</p>
-                </div>
-                
-                <div class="hologram" style="text-align: center;">
-                    <div style="font-size: 3rem;">🌐</div>
-                    <h3 style="color: #00ff00;">GLOBAL NETWORK</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Planetary coverage</p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 3rem;">
-                <p class="neon-text" style="font-size: 1.8rem;">
-                    ENTER TARGET COMPOUND TO INITIATE
-                </p>
-                <p style="color: #00ffff; animation: pulse 2s infinite;">
-                    ▼ Use Control Matrix in Sidebar ▼
-                </p>
-            </div>
-        </div>
+    # Welcome screen using columns and native components
+    st.markdown("## 🚀 WELCOME TO THE QUANTUM MONITORING SYSTEM")
+    
+    st.info("**Detect adverse drug reactions 48 hours faster than traditional monitoring systems**")
+    
+    # Feature cards using columns
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("### 🧬")
+        st.markdown("**MOLECULAR**")
+        st.markdown("**SCANNING**")
+        st.caption("Quantum-level analysis of pharmaceutical compounds")
+    
+    with col2:
+        st.markdown("### 🔮")
+        st.markdown("**PREDICTIVE**")
+        st.markdown("**AI ENGINE**")
+        st.caption("Future event modeling with 95% accuracy")
+    
+    with col3:
+        st.markdown("### ⚡")
+        st.markdown("**INSTANT**")
+        st.markdown("**ALERTS**")
+        st.caption("Real-time notifications in nanoseconds")
+    
+    with col4:
+        st.markdown("### 🌐")
+        st.markdown("**GLOBAL**")
+        st.markdown("**NETWORK**")
+        st.caption("Worldwide surveillance coverage")
+    
+    st.markdown("---")
+    
+    # Instructions
+    with st.expander("📖 **QUICK START GUIDE**", expanded=True):
+        st.markdown("""
+        ### How to Use ComplianceWatch Quantum:
         
-        <div style="position: fixed; bottom: 20px; right: 20px;">
-            <div class="pulse-ring"></div>
-        </div>
-    """, unsafe_allow_html=True)
+        1. **🧬 Enter Drug Name**: Input the pharmaceutical compound you want to monitor
+        2. **📡 Select Data Sources**: Choose from our AI-powered data streams
+        3. **⏰ Set Time Range**: Define your monitoring window
+        4. **🎯 Adjust Sensitivity**: Configure the detection threshold
+        5. **🚀 Launch**: Click "INITIATE QUANTUM SCAN" to begin
+        
+        The system will immediately begin:
+        - Scanning millions of data points per second
+        - Using AI to detect patterns and anomalies
+        - Generating real-time alerts and predictions
+        - Creating compliance-ready reports
+        """)
+    
+    # Demo data preview
+    st.markdown("---")
+    st.markdown("### 📊 SAMPLE DATA PREVIEW")
+    
+    sample_data = pd.DataFrame({
+        'Timestamp': pd.date_range(start='2025-01-01', periods=5, freq='H'),
+        'Event Type': ['Adverse Reaction', 'Side Effect', 'Drug Interaction', 'Overdose', 'Allergic Response'],
+        'Severity': ['High', 'Medium', 'Low', 'Critical', 'Medium'],
+        'Source': ['Reddit', 'Twitter', 'FDA', 'Hospital', 'Forum'],
+        'AI Confidence': ['95%', '87%', '92%', '99%', '88%']
+    })
+    
+    st.dataframe(sample_data, use_container_width=True)
+    
+    # Call to action
+    st.markdown("---")
+    st.success("⬅️ **Enter a drug name in the sidebar to begin monitoring**")
 
-# Footer with animated credits
+# Footer
+st.markdown("---")
 st.markdown("""
-    <div style="text-align: center; padding: 4rem 0; margin-top: 4rem;">
-        <div class="cyber-card" style="display: inline-block; padding: 2rem 4rem;">
-            <p class="neon-text">COMPLIANCEWATCH QUANTUM v3.0</p>
-            <p style="color: rgba(255,255,255,0.8);">© 2025 FUTURE PHARMA LABS</p>
-            <p style="color: #00ffff;">Created by Atharva Deshpande</p>
-            <div class="loading-bar" style="margin-top: 1rem;">
-                <div class="loading-progress"></div>
-            </div>
-        </div>
-    </div>
+<div style='text-align: center; color: rgba(255,255,255,0.8); padding: 2rem;'>
+    <p><strong>ComplianceWatch Quantum v3.0</strong> | © 2025 Future Pharma Labs</p>
+    <p>Created by Atharva Deshpande | Powered by AI</p>
+</div>
 """, unsafe_allow_html=True)
