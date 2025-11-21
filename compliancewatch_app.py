@@ -680,28 +680,26 @@ if st.session_state.monitoring and drug_name:
         ]
         
         for alert in alerts:
-            st.markdown(f"""
-            <div style='background: white; border-left: 4px solid {alert["color"]}; 
-                        border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.05);'>
-                <div style='display: flex; justify-content: space-between; margin-bottom: 0.5rem;'>
-                    <span style='color: {alert["color"]}; font-weight: 700; font-size: 0.9rem;'>
-                        ⚠️ {alert["level"].upper()}
-                    </span>
-                    <span style='color: #6B7280; font-size: 0.85rem;'>{alert["time"]}</span>
-                </div>
-                <h4 style='color: #1F2937; margin: 0.5rem 0; font-size: 1.1rem;'>{alert["title"]}</h4>
-                <p style='color: #6B7280; margin: 0.5rem 0;'>{alert["desc"]}</p>
-                <div style='display: flex; gap: 2rem; margin-top: 1rem;'>
-                    <span style='color: #6B7280; font-size: 0.85rem;'>
-                        📍 Source: <strong>{alert["source"]}</strong>
-                    </span>
-                    <span style='color: #6B7280; font-size: 0.85rem;'>
-                        🎯 Confidence: <strong>{alert["confidence"]}%</strong>
-                    </span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container():
+                if alert["level"] == "Critical":
+                    st.error(f"⚠️ **{alert['level'].upper()}** - {alert['time']}")
+                elif alert["level"] == "High":
+                    st.warning(f"⚠️ **{alert['level'].upper()}** - {alert['time']}")
+                elif alert["level"] == "Medium":
+                    st.info(f"⚠️ **{alert['level'].upper()}** - {alert['time']}")
+                else:
+                    st.success(f"✓ **{alert['level'].upper()}** - {alert['time']}")
+                
+                st.markdown(f"**{alert['title']}**")
+                st.markdown(alert['desc'])
+                
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    st.caption(f"📍 Source: {alert['source']}")
+                with col_b:
+                    st.caption(f"🎯 Confidence: {alert['confidence']}%")
+                
+                st.markdown("---")  # Separator between alerts
     
     with tab3:
         st.markdown("## AI Analysis")
@@ -793,16 +791,10 @@ if st.session_state.monitoring and drug_name:
         
         for i, (icon, title, desc, color) in enumerate(insights):
             with col1 if i % 2 == 0 else col2:
-                st.markdown(f"""
-                <div style='background: white; padding: 1.25rem; border-radius: 10px;
-                           border: 1px solid #E5E7EB; margin-bottom: 1rem;'>
-                    <div style='display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;'>
-                        <span style='font-size: 1.5rem;'>{icon}</span>
-                        <h5 style='color: {color}; margin: 0; font-size: 1rem; font-weight: 600;'>{title}</h5>
-                    </div>
-                    <p style='color: #6B7280; margin: 0; font-size: 0.9rem; line-height: 1.4;'>{desc}</p>
-                </div>
-                """, unsafe_allow_html=True)
+                with st.container():
+                    st.markdown(f"**{icon} {title}**")
+                    st.markdown(desc)
+                    st.markdown("")  # Add space
     
     with tab4:
         st.markdown("## Geographic Distribution")
@@ -979,79 +971,73 @@ else:
     
     st.markdown("---")
     
-    # Feature cards
+    # Feature cards using native Streamlit
     st.markdown("### ✨ Key Features")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("""
-        <div class='feature-card'>
-            <h4>🔍 Real-Time Monitoring</h4>
-            <p>24/7 surveillance across multiple data sources including social media, 
-            FDA databases, medical forums, and clinical reports.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container():
+            st.markdown("#### 🔍 Real-Time Monitoring")
+            st.markdown("""
+            24/7 surveillance across multiple data sources including social media, 
+            FDA databases, medical forums, and clinical reports.
+            """)
+            st.markdown("")  # Space
         
-        st.markdown("""
-        <div class='feature-card'>
-            <h4>⚡ Rapid Detection</h4>
-            <p>Identify adverse events up to 48 hours faster than traditional methods, 
-            enabling quicker response to potential safety issues.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container():
+            st.markdown("#### ⚡ Rapid Detection")
+            st.markdown("""
+            Identify adverse events up to 48 hours faster than traditional methods, 
+            enabling quicker response to potential safety issues.
+            """)
+            st.markdown("")  # Space
     
     with col2:
-        st.markdown("""
-        <div class='feature-card'>
-            <h4>🤖 AI-Powered Analysis</h4>
-            <p>Advanced machine learning algorithms detect patterns and anomalies 
-            with 95% accuracy using neural networks and NLP.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container():
+            st.markdown("#### 🤖 AI-Powered Analysis")
+            st.markdown("""
+            Advanced machine learning algorithms detect patterns and anomalies 
+            with 95% accuracy using neural networks and NLP.
+            """)
+            st.markdown("")  # Space
         
-        st.markdown("""
-        <div class='feature-card'>
-            <h4>📊 Compliance Ready</h4>
-            <p>Generate FDA-compliant reports automatically with full audit trails 
-            and regulatory documentation support.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container():
+            st.markdown("#### 📊 Compliance Ready")
+            st.markdown("""
+            Generate FDA-compliant reports automatically with full audit trails 
+            and regulatory documentation support.
+            """)
+            st.markdown("")  # Space
     
     st.markdown("---")
     
-    # How to use section - no dropdown, just clean instructions
+    # How to use section - clean instructions with native Streamlit
     st.markdown("### 📚 How to Use ComplianceWatch")
     
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #FAFBFF 0%, #F3F4F6 100%); 
-                padding: 2rem; border-radius: 12px; margin-bottom: 2rem;'>
-        <div class='instruction-card'>
-            <h5>Step 1: Enter Drug Name</h5>
-            <p>In the sidebar, input the pharmaceutical product you want to monitor (e.g., Ozempic, Keytruda)</p>
-        </div>
+    # Create a container with background
+    with st.container():
+        # Step 1
+        st.markdown("##### 1️⃣ Step 1: Enter Drug Name")
+        st.markdown("In the sidebar, input the pharmaceutical product you want to monitor (e.g., Ozempic, Keytruda)")
         
-        <div class='instruction-card'>
-            <h5>Step 2: Select Data Sources</h5>
-            <p>Choose which platforms and databases to monitor for adverse event reports</p>
-        </div>
+        # Step 2
+        st.markdown("##### 2️⃣ Step 2: Select Data Sources")
+        st.markdown("Choose which platforms and databases to monitor for adverse event reports")
         
-        <div class='instruction-card'>
-            <h5>Step 3: Configure Settings</h5>
-            <p>Set your time range, severity threshold, and AI confidence level based on your needs</p>
-        </div>
+        # Step 3
+        st.markdown("##### 3️⃣ Step 3: Configure Settings")
+        st.markdown("Set your time range, severity threshold, and AI confidence level based on your needs")
         
-        <div class='instruction-card'>
-            <h5>Step 4: Start Monitoring</h5>
-            <p>Click the "Start Monitoring" button to begin real-time surveillance</p>
-        </div>
+        # Step 4
+        st.markdown("##### 4️⃣ Step 4: Start Monitoring")
+        st.markdown("Click the 'Start Monitoring' button to begin real-time surveillance")
         
-        <div class='instruction-card' style='border-left-color: #10B981;'>
-            <h5>Step 5: Review Results</h5>
-            <p>Access comprehensive dashboards, alerts, and reports through the tabbed interface</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        # Step 5
+        st.markdown("##### ✅ Step 5: Review Results")
+        st.markdown("Access comprehensive dashboards, alerts, and reports through the tabbed interface")
+    
+    st.markdown("")  # Add space
     
     # Platform statistics
     st.markdown("### 📈 Platform Statistics")
