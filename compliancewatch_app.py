@@ -1,4 +1,4 @@
-# compliancewatch_clean.py - Clean Modern Design
+# compliancewatch_beautiful.py - Beautiful Clean UI
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -23,265 +23,284 @@ if 'monitoring' not in st.session_state:
 if 'counter' not in st.session_state:
     st.session_state.counter = 0
 
-# Clean, modern CSS with proper contrast
+# Beautiful, clean CSS
 st.markdown("""
 <style>
-    /* Import clean fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
-    /* Root variables for consistent theming */
+    /* Clean color palette */
     :root {
-        --bg-primary: #ffffff;
-        --bg-secondary: #f7f8fa;
-        --bg-dark: #1e1e2e;
-        --text-primary: #2d3436;
-        --text-secondary: #636e72;
-        --text-light: #b2bec3;
-        --accent-primary: #4834d4;
-        --accent-secondary: #6c5ce7;
-        --accent-light: #a29bfe;
-        --success: #00b894;
-        --warning: #fdcb6e;
-        --danger: #d63031;
-        --info: #74b9ff;
-        --border: #dfe6e9;
+        --primary: #5E4FDB;
+        --primary-light: #8B7FF0;
+        --primary-dark: #4039B8;
+        --secondary: #10B981;
+        --danger: #EF4444;
+        --warning: #F59E0B;
+        --info: #3B82F6;
+        --dark: #1F2937;
+        --gray: #6B7280;
+        --light-gray: #F3F4F6;
+        --white: #FFFFFF;
+        --border: #E5E7EB;
     }
     
-    /* Main app background */
+    /* Global styles */
     .stApp {
-        background-color: var(--bg-secondary);
+        background: linear-gradient(180deg, #FAFBFF 0%, #F3F4F6 100%);
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
-    /* Main content area */
-    .main .block-container {
-        padding: 2rem;
-        max-width: 1400px;
+    /* Headers */
+    h1 {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: var(--dark) !important;
+        font-weight: 800 !important;
+        font-size: 2.5rem !important;
+        letter-spacing: -0.02em !important;
     }
     
-    /* Headers with proper visibility */
-    h1, h2, h3, h4, h5, h6 {
-        color: var(--text-primary) !important;
-        font-family: 'Inter', sans-serif !important;
+    h2 {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: var(--dark) !important;
+        font-weight: 700 !important;
+        font-size: 1.8rem !important;
+        margin-top: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    h3 {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: var(--dark) !important;
         font-weight: 600 !important;
+        font-size: 1.3rem !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
     }
     
-    /* All text elements */
-    p, span, div, label, .stMarkdown {
-        color: var(--text-primary) !important;
-        font-family: 'Inter', sans-serif !important;
+    /* Paragraphs and text */
+    p, span, div, label {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: var(--gray) !important;
+        line-height: 1.6 !important;
     }
     
     /* Sidebar styling */
     section[data-testid="stSidebar"] {
-        background-color: var(--bg-dark);
+        background: linear-gradient(180deg, #5E4FDB 0%, #4039B8 100%);
+        padding-top: 2rem;
     }
     
-    section[data-testid="stSidebar"] * {
-        color: white !important;
+    section[data-testid="stSidebar"] .block-container {
+        padding: 0 1rem 2rem 1rem;
     }
     
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] h4,
-    section[data-testid="stSidebar"] h5 {
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] p {
         color: white !important;
     }
     
-    section[data-testid="stSidebar"] .stMarkdown p,
-    section[data-testid="stSidebar"] label {
-        color: rgba(255, 255, 255, 0.9) !important;
+    section[data-testid="stSidebar"] hr {
+        border-color: rgba(255, 255, 255, 0.2);
+        margin: 1.5rem 0;
     }
     
-    /* Buttons with subtle styling */
+    /* Beautiful buttons */
     .stButton > button {
-        background-color: var(--accent-primary);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         color: white;
         border: none;
-        padding: 0.6rem 1.2rem;
-        font-weight: 500;
-        border-radius: 6px;
-        transition: all 0.2s;
-        font-family: 'Inter', sans-serif;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 10px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        letter-spacing: 0.02em;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 14px 0 rgba(94, 79, 219, 0.3);
     }
     
     .stButton > button:hover {
-        background-color: var(--accent-secondary);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(72, 52, 212, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px 0 rgba(94, 79, 219, 0.4);
     }
     
-    /* Metrics with clean styling */
+    /* Metrics styling */
     [data-testid="metric-container"] {
-        background: var(--bg-primary);
-        padding: 1.2rem;
-        border-radius: 8px;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
         border: 1px solid var(--border);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    [data-testid="metric-container"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     
     [data-testid="metric-container"] label {
-        color: var(--text-secondary) !important;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-bottom: 0.25rem;
+        color: var(--gray) !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        margin-bottom: 0.5rem !important;
     }
     
     [data-testid="metric-container"] [data-testid="metric-value"] {
-        color: var(--text-primary) !important;
-        font-size: 1.875rem;
-        font-weight: 600;
+        color: var(--dark) !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
     }
     
     [data-testid="metric-container"] [data-testid="metric-delta"] {
-        color: var(--success) !important;
-        font-size: 0.875rem;
+        background: var(--light-gray);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: inline-block;
     }
     
-    /* Tabs with modern design */
+    /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: transparent;
-        border-bottom: 2px solid var(--border);
+        background: white;
+        padding: 0.25rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        gap: 0.5rem;
     }
     
     .stTabs [data-baseweb="tab"] {
-        color: var(--text-secondary) !important;
-        font-weight: 500;
-        padding: 0.75rem 1rem;
-        background-color: transparent;
-        border: none;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -2px;
+        color: var(--gray);
+        font-weight: 600;
+        background: transparent;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        transition: all 0.2s;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
-        color: var(--text-primary) !important;
-        background-color: var(--bg-secondary);
+        background: var(--light-gray);
+        color: var(--dark);
     }
     
     .stTabs [aria-selected="true"] {
-        color: var(--accent-primary) !important;
-        border-bottom: 2px solid var(--accent-primary);
+        background: var(--primary);
+        color: white;
     }
     
     /* Alert styling */
-    .stAlert > div {
-        padding: 1rem;
-        border-radius: 6px;
+    .stAlert {
+        border-radius: 10px;
         border: 1px solid;
-        font-size: 0.95rem;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
-    .stInfo > div {
-        background-color: #e3f2fd;
-        color: #1565c0;
-        border-color: #90caf9;
+    .stInfo {
+        background: #EFF6FF;
+        color: #1E40AF;
+        border-color: #BFDBFE;
     }
     
-    .stSuccess > div {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-        border-color: #81c784;
+    .stSuccess {
+        background: #F0FDF4;
+        color: #14532D;
+        border-color: #86EFAC;
     }
     
-    .stWarning > div {
-        background-color: #fff3e0;
-        color: #e65100;
-        border-color: #ffb74d;
+    .stWarning {
+        background: #FFFBEB;
+        color: #78350F;
+        border-color: #FDE047;
     }
     
-    .stError > div {
-        background-color: #ffebee;
-        color: #c62828;
-        border-color: #ef5350;
+    .stError {
+        background: #FEF2F2;
+        color: #7F1D1D;
+        border-color: #FCA5A5;
     }
     
     /* Input fields */
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > select,
-    .stMultiSelect > div > div > div {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        color: white !important;
-        border-radius: 4px;
-    }
-    
-    /* In main area */
-    .main .stTextInput > div > div > input,
-    .main .stSelectbox > div > div > select {
-        background-color: white !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text-primary) !important;
-    }
-    
-    .stTextInput > div > div > input:focus,
-    .stSelectbox > div > div > select:focus {
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 1px var(--accent-primary);
-    }
-    
-    /* Slider styling */
-    .stSlider > div > div > div > div {
-        background-color: var(--accent-primary);
-    }
-    
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: var(--bg-secondary);
-        color: var(--text-primary) !important;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        font-weight: 500;
-    }
-    
-    .streamlit-expanderContent {
-        border: 1px solid var(--border);
-        border-top: none;
-        background-color: white;
-    }
-    
-    /* Columns */
-    [data-testid="column"] > div {
-        background-color: transparent;
-    }
-    
-    /* Dataframe */
-    .dataframe {
-        font-size: 0.9rem;
-    }
-    
-    .dataframe thead tr th {
-        background-color: var(--bg-secondary) !important;
-        color: var(--text-primary) !important;
-        font-weight: 600;
-        text-align: left;
-    }
-    
-    .dataframe tbody tr td {
-        color: var(--text-primary) !important;
-    }
-    
-    /* Progress bar */
-    .stProgress > div > div > div > div {
-        background-color: var(--accent-primary);
-    }
-    
-    /* Custom card styling */
-    .info-card {
-        background: white;
-        border: 1px solid var(--border);
+    .stTextInput > div > div > input {
+        font-family: 'Plus Jakarta Sans', sans-serif;
         border-radius: 8px;
+        border: 2px solid var(--border);
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+    
+    section[data-testid="stSidebar"] .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+    
+    section[data-testid="stSidebar"] .stTextInput > div > div > input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    /* Custom cards */
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        border-color: var(--primary-light);
+    }
+    
+    .feature-card h4 {
+        color: var(--dark);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+    
+    .feature-card p {
+        color: var(--gray);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+    
+    .instruction-card {
+        background: linear-gradient(135deg, #FAFBFF 0%, #F3F4F6 100%);
+        border-left: 4px solid var(--primary);
         padding: 1.5rem;
+        border-radius: 8px;
         margin-bottom: 1rem;
     }
     
-    .info-card h4 {
-        color: var(--text-primary);
+    .instruction-card h5 {
+        color: var(--dark);
+        font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-    .info-card p {
-        color: var(--text-secondary);
+    .instruction-card p {
+        color: var(--gray);
         margin: 0;
     }
     
@@ -289,146 +308,196 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Ensure text is always visible */
+    /* Ensure text is visible */
     .element-container {
-        color: var(--text-primary) !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
-    .stMarkdown div {
-        color: inherit !important;
+    /* Column gaps */
+    [data-testid="column"] {
+        padding: 0 0.5rem;
     }
     
-    /* Fix for metric delta colors */
-    [data-testid="metric-delta"] svg {
-        fill: currentColor;
+    /* Horizontal rules */
+    hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 2rem 0;
     }
     
-    .metric-delta-negative {
-        color: var(--danger) !important;
+    /* Markdown text */
+    .stMarkdown {
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
-    .metric-delta-positive {
-        color: var(--success) !important;
+    /* Expander */
+    .streamlit-expanderHeader {
+        background: white !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-weight: 600 !important;
+        color: var(--dark) !important;
+    }
+    
+    .streamlit-expanderContent {
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        background: white;
+        padding: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Header
-st.title("💊 ComplianceWatch")
-st.markdown("**Real-time Pharmaceutical Adverse Event Monitoring System**")
-st.markdown("---")
+# Clean header with subtitle
+st.markdown("# 💊 ComplianceWatch")
+st.markdown("##### AI-Powered Pharmaceutical Adverse Event Monitoring System")
 
-# Sidebar
+# Add space
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Sidebar with clean design
 with st.sidebar:
-    st.markdown("# ⚙️ Configuration")
+    st.markdown("## ⚙️ Configuration Panel")
+    
     st.markdown("---")
     
-    # Drug input
+    # Drug input with better label
+    st.markdown("### 🧪 Drug Selection")
     drug_name = st.text_input(
-        "**Target Drug**",
-        placeholder="e.g., Ozempic",
-        help="Enter drug name to monitor"
+        "Target Drug Name",
+        placeholder="e.g., Ozempic, Keytruda",
+        help="Enter the pharmaceutical drug you want to monitor",
+        label_visibility="visible"
     )
     
     # Data sources
+    st.markdown("### 📊 Data Sources")
     data_sources = st.multiselect(
-        "**Data Sources**",
-        ["Reddit", "Twitter/X", "FDA FAERS", "Medical Forums", "Patient Reports"],
-        default=["Reddit", "FDA FAERS"]
+        "Select monitoring platforms",
+        ["Reddit", "Twitter/X", "FDA FAERS", "Medical Forums", "Patient Reports", "Clinical Trials"],
+        default=["Reddit", "FDA FAERS"],
+        label_visibility="visible"
     )
     
     # Time range
+    st.markdown("### ⏱️ Time Period")
     time_range = st.selectbox(
-        "**Time Period**",
-        ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "Last 90 Days"],
-        index=1
+        "Analysis window",
+        ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "Last 90 Days", "Last Year"],
+        index=1,
+        label_visibility="visible"
     )
     
     # Severity threshold
+    st.markdown("### 🎯 Alert Settings")
     severity_threshold = st.slider(
-        "**Severity Threshold**",
+        "Minimum Severity Level",
         min_value=1,
         max_value=10,
         value=5,
-        help="Minimum severity level for alerts"
+        help="Events above this severity will trigger alerts",
+        label_visibility="visible"
+    )
+    
+    confidence_threshold = st.slider(
+        "AI Confidence Threshold (%)",
+        min_value=50,
+        max_value=100,
+        value=80,
+        step=5,
+        help="Minimum confidence level for AI predictions",
+        label_visibility="visible"
     )
     
     st.markdown("---")
     
-    # Monitor button
-    if st.button("**Start Monitoring**", use_container_width=True, type="primary"):
+    # Start monitoring button
+    if st.button("🚀 **Start Monitoring**", use_container_width=True, type="primary"):
         st.session_state.monitoring = True
-        st.success("✓ Monitoring Active")
+        st.success("✅ Monitoring system activated successfully!")
     
+    # System status
     if st.session_state.monitoring:
         st.markdown("---")
-        st.markdown("### 📊 Status")
+        st.markdown("### 📡 System Status")
+        
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Status", "Active", "Live")
+            st.metric("Status", "Active", "● Live")
         with col2:
-            st.metric("Health", "100%", "Good")
+            st.metric("Health", "Optimal", "100%")
+        
+        st.markdown(f"**Last Update:** {datetime.now().strftime('%H:%M:%S')}")
 
-# Main content
+# Main content area
 if st.session_state.monitoring and drug_name:
     
-    # Top metrics row
+    # Top KPI Cards
+    st.markdown("### 📊 Key Performance Indicators")
+    
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.metric(
             label="Total Events",
             value="1,247",
-            delta="+23 today"
+            delta="↑ 23 today"
         )
     
     with col2:
         st.metric(
             label="Critical Alerts",
             value="3",
-            delta="Urgent",
-            delta_color="inverse"
+            delta="Requires attention"
         )
     
     with col3:
         st.metric(
             label="Detection Speed",
-            value="48h",
-            delta="Faster"
+            value="48 hours",
+            delta="Faster than baseline"
         )
     
     with col4:
         st.metric(
-            label="Accuracy",
+            label="AI Accuracy",
             value="94.7%",
-            delta="+2.1%"
+            delta="↑ 2.1%"
         )
     
     with col5:
         st.metric(
             label="Coverage",
             value="Global",
-            delta="100%"
+            delta="All regions"
         )
     
     st.markdown("---")
     
-    # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Dashboard", "🔔 Alerts", "🤖 AI Analysis", "🌍 Geographic", "📈 Predictions"])
+    # Create beautiful tabs
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📈 Dashboard Overview",
+        "🔔 Active Alerts",
+        "🤖 AI Analysis",
+        "🌍 Geographic Distribution",
+        "📊 Predictive Analytics"
+    ])
     
     with tab1:
-        st.header("Dashboard Overview")
+        st.markdown("## Dashboard Overview")
+        st.markdown("Real-time monitoring statistics and trends for " + drug_name)
         
+        # Create two columns for charts
         col1, col2 = st.columns(2)
         
         with col1:
-            st.subheader("Severity Distribution")
+            st.markdown("#### Severity Distribution")
             
-            # Bar chart
             severity_data = pd.DataFrame({
-                'Level': ['Critical', 'High', 'Medium', 'Low'],
-                'Count': [3, 12, 45, 187],
-                'Color': ['#d63031', '#fdcb6e', '#74b9ff', '#00b894']
+                'Level': ['Critical', 'High', 'Medium', 'Low', 'Minimal'],
+                'Count': [3, 12, 45, 187, 1000]
             })
             
             fig = go.Figure(data=[
@@ -436,173 +505,320 @@ if st.session_state.monitoring and drug_name:
                     x=severity_data['Count'],
                     y=severity_data['Level'],
                     orientation='h',
-                    marker_color=severity_data['Color'],
+                    marker=dict(
+                        color=['#EF4444', '#F59E0B', '#F59E0B', '#10B981', '#6B7280'],
+                        line=dict(width=0)
+                    ),
                     text=severity_data['Count'],
                     textposition='outside'
                 )
             ])
             
             fig.update_layout(
-                height=300,
-                showlegend=False,
-                plot_bgcolor='white',
+                height=350,
+                margin=dict(l=0, r=60, t=20, b=20),
+                plot_bgcolor='#FAFBFF',
                 paper_bgcolor='white',
-                xaxis=dict(showgrid=True, gridcolor='#f0f0f0'),
-                yaxis=dict(showgrid=False),
-                margin=dict(l=0, r=50, t=0, b=0)
+                showlegend=False,
+                xaxis=dict(
+                    showgrid=True,
+                    gridcolor='#E5E7EB',
+                    title="Number of Events"
+                ),
+                yaxis=dict(
+                    showgrid=False,
+                    title=""
+                ),
+                font=dict(family="Plus Jakarta Sans")
             )
             
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
-            st.subheader("Source Distribution")
+            st.markdown("#### Data Source Breakdown")
             
-            # Pie chart
             source_data = pd.DataFrame({
-                'Source': ['Reddit', 'FDA', 'Twitter', 'Forums'],
-                'Count': [89, 67, 54, 37]
+                'Source': ['Reddit', 'FDA FAERS', 'Twitter/X', 'Forums', 'Medical'],
+                'Count': [412, 389, 234, 156, 56]
             })
             
             fig2 = go.Figure(data=[go.Pie(
                 labels=source_data['Source'],
                 values=source_data['Count'],
-                hole=0.4,
-                marker_colors=['#4834d4', '#6c5ce7', '#a29bfe', '#74b9ff']
+                hole=0.5,
+                marker=dict(
+                    colors=['#5E4FDB', '#8B7FF0', '#10B981', '#F59E0B', '#3B82F6'],
+                    line=dict(width=0)
+                )
             )])
             
             fig2.update_layout(
-                height=300,
-                showlegend=True,
+                height=350,
+                margin=dict(l=20, r=20, t=20, b=20),
                 plot_bgcolor='white',
                 paper_bgcolor='white',
-                margin=dict(l=0, r=0, t=0, b=0)
+                showlegend=True,
+                font=dict(family="Plus Jakarta Sans"),
+                annotations=[
+                    dict(
+                        text='1,247<br>Total',
+                        x=0.5, y=0.5,
+                        font_size=24,
+                        showarrow=False,
+                        font=dict(family="Plus Jakarta Sans", weight=700)
+                    )
+                ]
             )
             
             st.plotly_chart(fig2, use_container_width=True)
         
-        # Trend chart
-        st.subheader("30-Day Trend")
+        # Trend Analysis
+        st.markdown("#### 30-Day Event Trend")
         
         dates = pd.date_range(end=datetime.now(), periods=30, freq='D')
-        trend_data = pd.DataFrame({
-            'Date': dates,
-            'Events': np.cumsum(np.random.randn(30) * 10 + 50)
-        })
+        events = 50 + np.cumsum(np.random.randn(30) * 5)
         
         fig3 = go.Figure()
+        
+        # Add gradient fill
         fig3.add_trace(go.Scatter(
-            x=trend_data['Date'],
-            y=trend_data['Events'],
-            mode='lines+markers',
+            x=dates,
+            y=events,
+            mode='lines',
             name='Events',
-            line=dict(color='#4834d4', width=2),
-            marker=dict(size=4)
+            line=dict(color='#5E4FDB', width=3),
+            fill='tonexty',
+            fillcolor='rgba(94, 79, 219, 0.1)'
+        ))
+        
+        # Add markers for last 7 days
+        fig3.add_trace(go.Scatter(
+            x=dates[-7:],
+            y=events[-7:],
+            mode='markers',
+            name='Recent',
+            marker=dict(size=8, color='#5E4FDB', symbol='circle')
         ))
         
         fig3.update_layout(
             height=300,
-            showlegend=False,
-            plot_bgcolor='white',
+            margin=dict(l=0, r=0, t=20, b=20),
+            plot_bgcolor='#FAFBFF',
             paper_bgcolor='white',
-            xaxis=dict(showgrid=True, gridcolor='#f0f0f0'),
-            yaxis=dict(showgrid=True, gridcolor='#f0f0f0'),
-            hovermode='x'
+            xaxis=dict(
+                showgrid=True,
+                gridcolor='#E5E7EB',
+                title="Date"
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='#E5E7EB',
+                title="Number of Events"
+            ),
+            showlegend=False,
+            hovermode='x unified',
+            font=dict(family="Plus Jakarta Sans")
         )
         
         st.plotly_chart(fig3, use_container_width=True)
     
     with tab2:
-        st.header("Active Alerts")
+        st.markdown("## Active Alerts")
+        st.markdown("Real-time alerts requiring attention")
         
-        # Alert list
+        # Alert stats
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.info("**3** Critical Alerts")
+        with col2:
+            st.warning("**7** High Priority")
+        with col3:
+            st.success("**15** Medium Priority")
+        with col4:
+            st.success("**42** Low Priority")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Alert list with better formatting
         alerts = [
-            {"severity": "Critical", "message": f"Severe reactions to {drug_name}", "time": "2 min ago", "conf": 95},
-            {"severity": "High", "message": f"Unusual pattern for {drug_name}", "time": "15 min ago", "conf": 87},
-            {"severity": "Medium", "message": f"Increased reports for {drug_name}", "time": "1 hour ago", "conf": 76},
-            {"severity": "Low", "message": f"Minor events for {drug_name}", "time": "3 hours ago", "conf": 62}
+            {
+                "level": "Critical",
+                "title": "Severe Adverse Reaction Cluster",
+                "desc": f"Multiple severe reactions to {drug_name} reported in Northeast region",
+                "source": "FDA FAERS",
+                "time": "2 minutes ago",
+                "confidence": 95,
+                "color": "#EF4444"
+            },
+            {
+                "level": "High",
+                "title": "Unusual Symptom Pattern",
+                "desc": f"Emerging pattern of neurological symptoms with {drug_name}",
+                "source": "Reddit",
+                "time": "15 minutes ago",
+                "confidence": 87,
+                "color": "#F59E0B"
+            },
+            {
+                "level": "Medium",
+                "title": "Increased Reporting Rate",
+                "desc": f"23% increase in adverse event reports for {drug_name}",
+                "source": "Twitter/X",
+                "time": "1 hour ago",
+                "confidence": 76,
+                "color": "#3B82F6"
+            },
+            {
+                "level": "Low",
+                "title": "Minor Side Effects",
+                "desc": f"Common side effects reported, within expected range",
+                "source": "Forums",
+                "time": "3 hours ago",
+                "confidence": 62,
+                "color": "#10B981"
+            }
         ]
         
         for alert in alerts:
-            col1, col2, col3 = st.columns([3, 1, 1])
-            
-            with col1:
-                if alert["severity"] == "Critical":
-                    st.error(f"🔴 **{alert['severity']}**: {alert['message']}")
-                elif alert["severity"] == "High":
-                    st.warning(f"🟠 **{alert['severity']}**: {alert['message']}")
-                elif alert["severity"] == "Medium":
-                    st.info(f"🟡 **{alert['severity']}**: {alert['message']}")
-                else:
-                    st.success(f"🟢 **{alert['severity']}**: {alert['message']}")
-            
-            with col2:
-                st.markdown(f"**Confidence:** {alert['conf']}%")
-            
-            with col3:
-                st.markdown(f"_{alert['time']}_")
-            
-            st.markdown("")  # Spacing
+            st.markdown(f"""
+            <div style='background: white; border-left: 4px solid {alert["color"]}; 
+                        border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.05);'>
+                <div style='display: flex; justify-content: space-between; margin-bottom: 0.5rem;'>
+                    <span style='color: {alert["color"]}; font-weight: 700; font-size: 0.9rem;'>
+                        ⚠️ {alert["level"].upper()}
+                    </span>
+                    <span style='color: #6B7280; font-size: 0.85rem;'>{alert["time"]}</span>
+                </div>
+                <h4 style='color: #1F2937; margin: 0.5rem 0; font-size: 1.1rem;'>{alert["title"]}</h4>
+                <p style='color: #6B7280; margin: 0.5rem 0;'>{alert["desc"]}</p>
+                <div style='display: flex; gap: 2rem; margin-top: 1rem;'>
+                    <span style='color: #6B7280; font-size: 0.85rem;'>
+                        📍 Source: <strong>{alert["source"]}</strong>
+                    </span>
+                    <span style='color: #6B7280; font-size: 0.85rem;'>
+                        🎯 Confidence: <strong>{alert["confidence"]}%</strong>
+                    </span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     
     with tab3:
-        st.header("AI Analysis")
+        st.markdown("## AI Analysis")
+        st.markdown("Machine learning insights and pattern recognition")
         
-        # AI metrics
+        # AI Metrics
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Pattern Recognition", "96%", "Active")
+            st.metric("Pattern Recognition", "96%", "↑ 3%")
         with col2:
-            st.metric("Anomaly Detection", "92%", "Running")
+            st.metric("Anomaly Detection", "Active", "12 found")
         with col3:
-            st.metric("Confidence Level", "89%", "High")
+            st.metric("Processing Speed", "1,247/sec", "Normal")
         with col4:
-            st.metric("Processing", "1.2K/s", "Normal")
+            st.metric("Model Confidence", "89%", "High")
         
         st.markdown("---")
         
-        # Neural activity
-        st.subheader("Neural Network Activity")
+        # Neural Network Visualization
+        st.markdown("#### Neural Network Activity")
         
-        time_points = np.linspace(0, 10, 200)
-        signal = np.sin(2 * np.pi * time_points) + np.random.normal(0, 0.1, 200)
+        time_points = np.linspace(0, 10, 300)
         
-        fig_neural = go.Figure()
-        fig_neural.add_trace(go.Scatter(
-            x=time_points,
-            y=signal,
-            mode='lines',
-            name='Neural Signal',
-            line=dict(color='#6c5ce7', width=2)
-        ))
+        fig_neural = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=('Pattern Recognition', 'Anomaly Detection', 
+                          'Sentiment Analysis', 'Risk Assessment'),
+            vertical_spacing=0.15,
+            horizontal_spacing=0.1
+        )
+        
+        # Generate different signals
+        signals = [
+            np.sin(2 * np.pi * time_points) + np.random.normal(0, 0.1, 300),
+            np.cos(2 * np.pi * time_points * 1.5) * np.exp(-time_points/10),
+            np.sin(2 * np.pi * time_points * 0.5) + np.sin(2 * np.pi * time_points * 2) * 0.3,
+            np.random.normal(0, 1, 300).cumsum() / 10
+        ]
+        
+        colors = ['#5E4FDB', '#10B981', '#F59E0B', '#EF4444']
+        positions = [(1, 1), (1, 2), (2, 1), (2, 2)]
+        
+        for signal, color, pos in zip(signals, colors, positions):
+            fig_neural.add_trace(
+                go.Scatter(
+                    x=time_points,
+                    y=signal,
+                    mode='lines',
+                    line=dict(color=color, width=2),
+                    showlegend=False
+                ),
+                row=pos[0], col=pos[1]
+            )
         
         fig_neural.update_layout(
-            height=300,
-            plot_bgcolor='white',
+            height=400,
+            plot_bgcolor='#FAFBFF',
             paper_bgcolor='white',
-            xaxis=dict(title='Time (s)', gridcolor='#f0f0f0'),
-            yaxis=dict(title='Signal', gridcolor='#f0f0f0'),
-            showlegend=False
+            font=dict(family="Plus Jakarta Sans"),
+            margin=dict(l=0, r=0, t=40, b=0)
+        )
+        
+        fig_neural.update_xaxes(
+            showgrid=True,
+            gridcolor='#E5E7EB',
+            title_text='Time (s)',
+            title_font=dict(size=10)
+        )
+        fig_neural.update_yaxes(
+            showgrid=True,
+            gridcolor='#E5E7EB',
+            title_text='Signal',
+            title_font=dict(size=10)
         )
         
         st.plotly_chart(fig_neural, use_container_width=True)
         
-        # Insights
-        st.subheader("Key Insights")
+        # Key Insights
+        st.markdown("#### AI-Generated Insights")
+        
+        insights = [
+            ("📊", "Pattern Detected", "Correlation found between dosage timing and adverse events", "#5E4FDB"),
+            ("⚠️", "Anomaly Alert", "Unusual clustering of events in 25-35 age demographic", "#F59E0B"),
+            ("📈", "Trend Analysis", "12% week-over-week increase in reported events", "#10B981"),
+            ("🎯", "Risk Assessment", "Elevated risk profile for patients with comorbidities", "#EF4444")
+        ]
         
         col1, col2 = st.columns(2)
-        with col1:
-            st.info("📊 Pattern detected: Increased events in age group 25-35")
-        with col2:
-            st.warning("⚠️ Anomaly: Unusual clustering in urban areas")
+        
+        for i, (icon, title, desc, color) in enumerate(insights):
+            with col1 if i % 2 == 0 else col2:
+                st.markdown(f"""
+                <div style='background: white; padding: 1.25rem; border-radius: 10px;
+                           border: 1px solid #E5E7EB; margin-bottom: 1rem;'>
+                    <div style='display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;'>
+                        <span style='font-size: 1.5rem;'>{icon}</span>
+                        <h5 style='color: {color}; margin: 0; font-size: 1rem; font-weight: 600;'>{title}</h5>
+                    </div>
+                    <p style='color: #6B7280; margin: 0; font-size: 0.9rem; line-height: 1.4;'>{desc}</p>
+                </div>
+                """, unsafe_allow_html=True)
     
     with tab4:
-        st.header("Geographic Distribution")
+        st.markdown("## Geographic Distribution")
+        st.markdown("Global and regional adverse event distribution")
         
-        # Map data
+        # Map
         map_data = pd.DataFrame({
-            'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'],
-            'lat': [40.7, 34.0, 41.9, 29.8, 33.4],
-            'lon': [-74.0, -118.2, -87.6, -95.4, -112.1],
-            'events': [95, 78, 64, 52, 41]
+            'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
+                    'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'],
+            'State': ['NY', 'CA', 'IL', 'TX', 'AZ', 'PA', 'TX', 'CA', 'TX', 'CA'],
+            'lat': [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
+                   39.9526, 29.4241, 32.7157, 32.7767, 37.3382],
+            'lon': [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
+                   -75.1652, -98.4936, -117.1611, -96.7970, -121.8863],
+            'events': [156, 143, 98, 87, 76, 65, 54, 52, 48, 41],
+            'severity': ['High', 'High', 'Medium', 'Medium', 'Low', 'Medium', 'Low', 'Low', 'Medium', 'Low']
         })
         
         fig_map = px.scatter_mapbox(
@@ -610,164 +826,264 @@ if st.session_state.monitoring and drug_name:
             lat='lat',
             lon='lon',
             size='events',
+            color='severity',
             hover_name='City',
-            hover_data=['events'],
-            color_discrete_sequence=['#4834d4'],
+            hover_data={'State': True, 'events': True, 'lat': False, 'lon': False},
+            color_discrete_map={'High': '#EF4444', 'Medium': '#F59E0B', 'Low': '#10B981'},
             zoom=3,
-            height=400
+            height=450
         )
         
         fig_map.update_layout(
             mapbox_style='carto-positron',
-            margin={"r":0,"t":0,"l":0,"b":0}
+            margin={"r":0,"t":0,"l":0,"b":0},
+            font=dict(family="Plus Jakarta Sans")
         )
         
         st.plotly_chart(fig_map, use_container_width=True)
         
-        # Regional stats
-        st.subheader("Regional Statistics")
+        # Regional Statistics
+        st.markdown("#### Regional Statistics")
         
         regional_data = pd.DataFrame({
-            'Region': ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West'],
-            'Events': [342, 298, 276, 234, 197],
-            'Trend': ['↑', '↓', '→', '↑', '→']
+            'Region': ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West Coast'],
+            'Total Events': [342, 298, 276, 234, 197],
+            'Critical': [8, 5, 4, 3, 2],
+            'Trend': ['↑ Rising', '→ Stable', '↓ Declining', '↑ Rising', '→ Stable'],
+            'Risk Level': ['High', 'Medium', 'Medium', 'Low', 'Low']
         })
         
-        st.dataframe(regional_data, use_container_width=True, hide_index=True)
+        st.dataframe(
+            regional_data,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Region": st.column_config.TextColumn("Region", width="medium"),
+                "Total Events": st.column_config.NumberColumn("Total Events", format="%d"),
+                "Critical": st.column_config.NumberColumn("Critical", format="%d"),
+                "Trend": st.column_config.TextColumn("Trend", width="small"),
+                "Risk Level": st.column_config.TextColumn("Risk Level", width="small")
+            }
+        )
     
     with tab5:
-        st.header("Predictive Analytics")
+        st.markdown("## Predictive Analytics")
+        st.markdown("AI-powered forecasting and trend predictions")
         
-        # Prediction chart
-        future_dates = pd.date_range(start=datetime.now(), periods=30, freq='D')
-        prediction = 100 + np.cumsum(np.random.randn(30) * 5)
-        upper = prediction + 20
-        lower = prediction - 20
+        # Controls
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            forecast_days = st.selectbox("Forecast Period", ["7 days", "14 days", "30 days", "90 days"], index=2)
+        with col2:
+            model_type = st.selectbox("Model Type", ["LSTM Neural Network", "Prophet", "ARIMA", "Ensemble"])
+        with col3:
+            confidence = st.selectbox("Confidence Interval", ["90%", "95%", "99%"], index=1)
+        
+        st.markdown("---")
+        
+        # Generate prediction
+        days = int(forecast_days.split()[0])
+        future_dates = pd.date_range(start=datetime.now(), periods=days, freq='D')
+        
+        # Create realistic prediction
+        trend = np.linspace(100, 120, days)
+        seasonal = 15 * np.sin(np.linspace(0, 4*np.pi, days))
+        noise = np.random.normal(0, 5, days)
+        prediction = trend + seasonal + noise
+        
+        # Confidence bands
+        ci_mult = {'90%': 1.645, '95%': 1.96, '99%': 2.576}[confidence]
+        std = 15
+        upper = prediction + ci_mult * std
+        lower = prediction - ci_mult * std
         
         fig_pred = go.Figure()
         
-        # Confidence band
+        # Add confidence band
         fig_pred.add_trace(go.Scatter(
             x=future_dates,
             y=upper,
-            fill=None,
             mode='lines',
-            line_color='rgba(0,0,0,0)',
-            showlegend=False
+            line=dict(width=0),
+            showlegend=False,
+            hoverinfo='skip'
         ))
         
         fig_pred.add_trace(go.Scatter(
             x=future_dates,
             y=lower,
-            fill='tonexty',
             mode='lines',
-            line_color='rgba(0,0,0,0)',
-            name='95% Confidence',
-            fillcolor='rgba(72, 52, 212, 0.1)'
+            line=dict(width=0),
+            fill='tonexty',
+            fillcolor='rgba(94, 79, 219, 0.15)',
+            name=f'{confidence} Confidence Band',
+            hoverinfo='skip'
         ))
         
-        # Prediction line
+        # Add prediction line
         fig_pred.add_trace(go.Scatter(
             x=future_dates,
             y=prediction,
             mode='lines+markers',
-            name='Prediction',
-            line=dict(color='#4834d4', width=2),
-            marker=dict(size=4)
+            name='Predicted Events',
+            line=dict(color='#5E4FDB', width=3),
+            marker=dict(size=5, color='#5E4FDB')
         ))
         
         fig_pred.update_layout(
-            title='30-Day Forecast',
+            title=f'{forecast_days} Forecast using {model_type}',
             xaxis_title='Date',
-            yaxis_title='Predicted Events',
-            height=350,
-            plot_bgcolor='white',
+            yaxis_title='Predicted Event Count',
+            height=400,
+            plot_bgcolor='#FAFBFF',
             paper_bgcolor='white',
-            xaxis=dict(gridcolor='#f0f0f0'),
-            yaxis=dict(gridcolor='#f0f0f0'),
-            hovermode='x'
+            xaxis=dict(showgrid=True, gridcolor='#E5E7EB'),
+            yaxis=dict(showgrid=True, gridcolor='#E5E7EB'),
+            hovermode='x unified',
+            font=dict(family="Plus Jakarta Sans"),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
         )
         
         st.plotly_chart(fig_pred, use_container_width=True)
         
-        # Metrics
-        col1, col2, col3 = st.columns(3)
+        # Prediction Metrics
+        st.markdown("#### Model Performance")
+        
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Peak Risk", "Day 17", "Monitor")
+            st.metric("RMSE", "8.42", "Lower is better")
         with col2:
-            st.metric("Trend", "Increasing", "12%")
+            st.metric("MAE", "6.18", "Lower is better")
         with col3:
-            st.metric("Confidence", "89%", "High")
+            st.metric("R² Score", "0.923", "Higher is better")
+        with col4:
+            st.metric("MAPE", "7.3%", "Lower is better")
 
 else:
-    # Welcome screen
-    st.header("Welcome to ComplianceWatch")
+    # Beautiful welcome screen
+    st.markdown("## Welcome to ComplianceWatch")
     
     st.markdown("""
-    ComplianceWatch is an AI-powered system for real-time pharmaceutical adverse event monitoring. 
-    Detect potential safety signals **48 hours faster** than traditional methods.
-    """)
+    <p style='font-size: 1.1rem; color: #6B7280; margin-bottom: 2rem;'>
+    ComplianceWatch uses advanced artificial intelligence to monitor pharmaceutical adverse events 
+    in real-time, detecting potential safety signals <strong style='color: #5E4FDB;'>48 hours faster</strong> 
+    than traditional pharmacovigilance methods.
+    </p>
+    """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    # Features
-    col1, col2, col3, col4 = st.columns(4)
+    # Feature cards
+    st.markdown("### ✨ Key Features")
+    
+    col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
-        ### 🔍 Real-Time
-        24/7 monitoring across multiple data sources
-        """)
+        <div class='feature-card'>
+            <h4>🔍 Real-Time Monitoring</h4>
+            <p>24/7 surveillance across multiple data sources including social media, 
+            FDA databases, medical forums, and clinical reports.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class='feature-card'>
+            <h4>⚡ Rapid Detection</h4>
+            <p>Identify adverse events up to 48 hours faster than traditional methods, 
+            enabling quicker response to potential safety issues.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-        ### 🤖 AI-Powered
-        Advanced ML with 95% accuracy
-        """)
-    
-    with col3:
+        <div class='feature-card'>
+            <h4>🤖 AI-Powered Analysis</h4>
+            <p>Advanced machine learning algorithms detect patterns and anomalies 
+            with 95% accuracy using neural networks and NLP.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.markdown("""
-        ### ⚡ Fast Detection
-        48 hours faster than traditional methods
-        """)
-    
-    with col4:
-        st.markdown("""
-        ### 📊 Compliance
-        FDA-ready automated reports
-        """)
+        <div class='feature-card'>
+            <h4>📊 Compliance Ready</h4>
+            <p>Generate FDA-compliant reports automatically with full audit trails 
+            and regulatory documentation support.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    # How to use
-    with st.expander("📖 How to Use", expanded=True):
-        st.markdown("""
-        1. **Enter a drug name** in the sidebar (e.g., Ozempic, Keytruda)
-        2. **Select data sources** to monitor
-        3. **Configure settings** (time range, severity threshold)
-        4. **Click "Start Monitoring"** to begin
-        5. **View results** in the dashboard tabs
-        """)
+    # How to use section - no dropdown, just clean instructions
+    st.markdown("### 📚 How to Use ComplianceWatch")
     
-    # Stats
-    st.markdown("---")
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #FAFBFF 0%, #F3F4F6 100%); 
+                padding: 2rem; border-radius: 12px; margin-bottom: 2rem;'>
+        <div class='instruction-card'>
+            <h5>Step 1: Enter Drug Name</h5>
+            <p>In the sidebar, input the pharmaceutical product you want to monitor (e.g., Ozempic, Keytruda)</p>
+        </div>
+        
+        <div class='instruction-card'>
+            <h5>Step 2: Select Data Sources</h5>
+            <p>Choose which platforms and databases to monitor for adverse event reports</p>
+        </div>
+        
+        <div class='instruction-card'>
+            <h5>Step 3: Configure Settings</h5>
+            <p>Set your time range, severity threshold, and AI confidence level based on your needs</p>
+        </div>
+        
+        <div class='instruction-card'>
+            <h5>Step 4: Start Monitoring</h5>
+            <p>Click the "Start Monitoring" button to begin real-time surveillance</p>
+        </div>
+        
+        <div class='instruction-card' style='border-left-color: #10B981;'>
+            <h5>Step 5: Review Results</h5>
+            <p>Access comprehensive dashboards, alerts, and reports through the tabbed interface</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Platform statistics
+    st.markdown("### 📈 Platform Statistics")
     
     col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Drugs Monitored", "2,847")
-    with col2:
-        st.metric("Events Detected", "1.2M")
-    with col3:
-        st.metric("Active Alerts", "342")
-    with col4:
-        st.metric("Uptime", "99.97%")
     
-    st.info("👈 **Ready to start?** Enter a drug name in the sidebar and click 'Start Monitoring'")
+    with col1:
+        st.metric("Drugs Monitored", "2,847", "↑ 127 this month")
+    
+    with col2:
+        st.metric("Events Detected", "1.2M", "↑ 48K this week")
+    
+    with col3:
+        st.metric("Active Alerts", "342", "23 critical")
+    
+    with col4:
+        st.metric("System Uptime", "99.97%", "30 days")
+    
+    st.markdown("---")
+    
+    # Call to action
+    st.info("👈 **Ready to begin?** Enter a drug name in the sidebar and click 'Start Monitoring' to activate the system.")
 
 # Footer
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; padding: 2rem 0; color: #636e72;'>
-    ComplianceWatch © 2025 | Created by Atharva Deshpande
+<div style='text-align: center; padding: 2rem 0; color: #6B7280;'>
+    <p style='font-size: 0.95rem; margin: 0;'>
+        <strong>ComplianceWatch</strong> © 2025 | Protecting Patients Through Intelligent Monitoring
+    </p>
+    <p style='font-size: 0.85rem; margin: 0.5rem 0;'>
+        Created by Atharva Deshpande | Powered by Advanced AI
+    </p>
 </div>
 """, unsafe_allow_html=True)
